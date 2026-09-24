@@ -1,0 +1,86 @@
+---
+import { repositoryUrl } from "../config";
+import ExternalLink from "./ExternalLink.astro";
+import GithubIcon from "./GithubIcon.astro";
+import LanguageMenu from "./LanguageMenu.astro";
+import { type Locale, type UiKey } from "../i18n/ui";
+import { useTranslations } from "../i18n/utils";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const sections = ["intro", "projects", "experience"] as const;
+---
+
+<header class="fixed inset-x-0 top-0 z-10 bg-tea-green-900">
+  <div class="mx-auto max-w-6xl px-4">
+  <nav class="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-dark-slate-grey-800 py-3" aria-label={t("nav.label")}>
+    <ul class="flex flex-wrap gap-x-4 gap-y-1">
+      {
+        sections.map((id) => (
+          <li>
+            <a
+              data-nav
+              class="text-charcoal-blue-500 aria-[current=location]:text-pacific-cyan-500"
+              href={`#${id}`}
+            >
+              {t(`nav.${id}` as UiKey)}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="ml-auto flex items-center gap-4">
+      <LanguageMenu locale={locale} />
+      <ExternalLink class="inline-flex items-center gap-1 text-charcoal-blue-500" href={repositoryUrl}>
+        <GithubIcon />
+        {t("repo")}
+      </ExternalLink>
+    </div>
+  </nav>
+  </div>
+</header>
+
+<script>
+  const navLinks = document.querySelectorAll<HTMLAnchorElement>("[data-nav]");
+  const sections = [...navLinks]
+    .map((link) => document.querySelector(link.hash))
+    .filter((section): section is HTMLElement => section instanceof HTMLElement);
+
+  function highlight(id: string) {
+    for (const link of navLinks) {
+      if (link.hash === `#${id}`) link.setAttribute("aria-current", "location");
+      else link.removeAttribute("aria-current");
+    }
+  }
+
+  function highlightSectionAtTop() {
+    const marker = 96;
+    let current = sections[0];
+    let bestTop = Number.NEGATIVE_INFINITY;
+    for (const section of sections) {
+      const top = section.getBoundingClientRect().top;
+      if (top <= marker && top > bestTop) {
+        bestTop = top;
+        current = section;
+      }
+    }
+    if (current) highlight(current.id);
+  }
+
+  highlightSectionAtTop();
+  document.addEventListener("scroll", highlightSectionAtTop, { passive: true });
+
+  for (const link of document.querySelectorAll<HTMLAnchorElement>("[data-locale-switch]")) {
+    link.addEventListener("click", () => {
+      const current = document.querySelector<HTMLAnchorElement>(
+        "[data-nav][aria-current='location']",
+      );
+      if (current?.hash) link.hash = current.hash;
+    });
+  }
+</script>

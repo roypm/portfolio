@@ -1,0 +1,85 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { ChevronDown } from "@lucide/astro";
+import Flag from "./Flag.astro";
+import { languageLabels, languageShort, locales, type Locale } from "../i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<div class="relative" data-lang>
+  <button
+    type="button"
+    data-lang-button
+    class="inline-flex items-center gap-2 text-charcoal-blue-500"
+    aria-haspopup="listbox"
+    aria-expanded="false"
+    aria-label={languageLabels[locale]}
+  >
+    <Flag locale={locale} />
+    <span class="md:hidden">{languageShort[locale]}</span>
+    <span class="hidden md:inline">{languageLabels[locale]}</span>
+    <ChevronDown size={16} aria-hidden="true" />
+  </button>
+  <ul
+    data-lang-menu
+    hidden
+    class="absolute right-0 z-20 mt-2 min-w-40 rounded-lg border border-dark-slate-grey-800 bg-tea-green-800 py-1 shadow-md"
+    role="listbox"
+  >
+    {
+      locales.map((code) => (
+        <li role="presentation">
+          <a
+            data-locale-switch
+            role="option"
+            aria-selected={code === locale}
+            class:list={[
+              "flex items-center gap-2 px-3 py-2 text-charcoal-blue-500",
+              code === locale && "text-pacific-cyan-500",
+            ]}
+            href={getRelativeLocaleUrl(code, "/")}
+            hreflang={code}
+          >
+            <Flag locale={code} />
+            {languageLabels[code]}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-lang]");
+  const button = root?.querySelector<HTMLButtonElement>("[data-lang-button]");
+  const menu = root?.querySelector<HTMLElement>("[data-lang-menu]");
+
+  if (root && button && menu) {
+    const setOpen = (open: boolean) => {
+      menu.hidden = !open;
+      button.setAttribute("aria-expanded", String(open));
+    };
+
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      setOpen(menu.hidden);
+    });
+
+    menu.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+
+    document.addEventListener("pointerdown", (event) => {
+      if (event.target instanceof Node && !root.contains(event.target)) setOpen(false);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") setOpen(false);
+    });
+  }
+</script>

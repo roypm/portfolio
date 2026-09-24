@@ -1,0 +1,24 @@
+---
+import { authorName, authorUrl } from "../config";
+import ExternalLink from "./ExternalLink.astro";
+import type { Locale } from "../i18n/ui";
+import { useTranslations } from "../i18n/utils";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const year = new Date().getFullYear();
+---
+
+<footer class="mx-auto max-w-6xl px-4 pt-10 pb-24 text-charcoal-blue-500">
+  <div class="flex items-center justify-center gap-x-3 border-t border-dark-slate-grey-800 pt-6 text-center">
+    <p>{t("footer.rights").replace("{year}", String(year))}</p>
+    <p>
+      {t("footer.createdBy")}{" "}
+      <ExternalLink class="text-pacific-cyan-500" href={authorUrl}>{authorName}</ExternalLink>
+    </p>
+  </div>
+</footer>

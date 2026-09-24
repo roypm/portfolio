@@ -1,0 +1,177 @@
+---
+import { Image } from "astro:assets";
+import { getCollection, render } from "astro:content";
+import ContactBubble from "./ContactBubble.astro";
+import ExternalLink from "./ExternalLink.astro";
+import { localizedEntries } from "../i18n/content";
+import { defaultLocale, type Locale } from "../i18n/ui";
+import { useTranslations } from "../i18n/utils";
+import Footer from "./Footer.astro";
+import Nav from "./Nav.astro";
+import "../styles/global.css";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const homes = await getCollection("home");
+const home = homes.find((entry) => entry.id === locale) ?? homes.find((entry) => entry.id === defaultLocale);
+const Bio = home ? (await render(home)).Content : null;
+
+const projects = localizedEntries(await getCollection("projects"), locale).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+const experience = localizedEntries(await getCollection("experience"), locale).sort(
+  (a, b) => b.data.start.valueOf() - a.data.start.valueOf(),
+);
+
+const experienceBodies = new Map(
+  await Promise.all(
+    experience.map(async (entry) => [entry.id, (await render(entry)).Content] as const),
+  ),
+);
+
+const dateFormat = new Intl.DateTimeFormat(locale, { year: "numeric", month: "short" });
+const name = home?.data.name ?? "";
+const role = home?.data.role ?? "";
+const sentence = home?.data.sentence ?? "";
+const focus = home?.data.focus ?? "";
+const hasBio = Boolean(home?.body?.trim());
+const placeholder = "italic text-dark-slate-grey-600";
+const projectPlaceholders = [0, 1, 2, 3];
+const experiencePlaceholders = [0, 1, 2];
+---
+
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{name || "Portfolio"}</title>
+  </head>
+  <body class="bg-tea-green-900 text-charcoal-blue-500">
+    <Nav locale={locale} />
+    <main class="mx-auto max-w-6xl px-4 pt-24">
+      <div class="grid items-start gap-10 md:grid-cols-2">
+      <section id="intro" class="scroll-mt-24">
+        {
+          home?.data.photo ? (
+            <Image src={home.data.photo} alt="" class="mb-4 size-24 rounded-full object-cover" />
+          ) : (
+            <div class="mb-4 size-24 rounded-full bg-muted-teal-800" aria-hidden="true"></div>
+          )
+        }
+        <h1 class:list={["text-3xl text-charcoal-blue-300", !name && placeholder]}>{name || t("placeholder.name")}</h1>
+        <p class:list={[!role && placeholder]}>{role || t("placeholder.role")}</p>
+        <p class:list={["mt-2", !sentence && placeholder]}>{sentence || t("placeholder.sentence")}</p>
+      </section>
+
+      <div class="flex flex-col gap-10">
+      <section id="bio" class="scroll-mt-24">
+        <h2 class="text-xl text-charcoal-blue-300">{t("nav.bio")}</h2>
+        {
+          hasBio && Bio ? (
+            <div class="mt-4"><Bio /></div>
+          ) : (
+            <p class:list={["mt-4", placeholder]}>{t("placeholder.bio")}</p>
+          )
+        }
+      </section>
+
+      <section id="focus" class="scroll-mt-24">
+        <h2 class="text-xl text-charcoal-blue-300">{t("nav.focus")}</h2>
+        <p class:list={["mt-4", !focus && placeholder]}>{focus || t("placeholder.focus")}</p>
+      </section>
+      </div>
+      </div>
+
+      <section id="projects" class="mt-16 scroll-mt-24">
+        <h2 class="text-xl text-charcoal-blue-300">{t("nav.projects")}</h2>
+        <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {
+            projects.length > 0
+              ? projects.map((project) => (
+                  <article class="flex h-full flex-col overflow-hidden rounded-lg border border-dark-slate-grey-800 bg-tea-green-800">
+                    {
+                      project.data.image && (
+                        <Image src={project.data.image} alt={project.data.title} class="aspect-video w-full object-cover" />
+                      )
+                    }
+                    <div class="flex flex-1 flex-col p-4">
+                      <h3 class="text-lg text-charcoal-blue-300">{project.data.title}</h3>
+                      <p class="mt-1">{project.data.summary}</p>
+                      {project.data.stack.length > 0 && <p class="mt-3">{project.data.stack.join(", ")}</p>}
+                      {
+                        project.data.url && (
+                          <ExternalLink class="mt-2 text-pacific-cyan-500" href={project.data.url}>
+                            {project.data.url}
+                          </ExternalLink>
+                        )
+                      }
+                    </div>
+                  </article>
+                ))
+              : projectPlaceholders.map(() => (
+                  <article class="flex h-full flex-col overflow-hidden rounded-lg border border-dark-slate-grey-800 bg-tea-green-800">
+                    <div class="aspect-video w-full bg-muted-teal-800" aria-hidden="true"></div>
+                    <div class="flex flex-1 flex-col p-4">
+                      <h3 class:list={["text-lg", placeholder]}>{t("placeholder.project.title")}</h3>
+                      <p class:list={["mt-1", placeholder]}>{t("placeholder.project.summary")}</p>
+                      <p class:list={["mt-3", placeholder]}>{t("placeholder.project.stack")}</p>
+                      <p class:list={["mt-2", placeholder]}>{t("placeholder.project.url")}</p>
+                    </div>
+                  </article>
+                ))
+          }
+        </div>
+      </section>
+
+      <section id="experience" class="mt-16 scroll-mt-24">
+        <h2 class="text-xl text-charcoal-blue-300">{t("nav.experience")}</h2>
+        <div class="relative mt-8 ml-2">
+          <div class="absolute top-2 bottom-2 left-0 w-px bg-pacific-cyan-500" aria-hidden="true"></div>
+          <ol>
+            {
+              experience.length > 0
+                ? experience.map((entry) => {
+                    const ExperienceBody = experienceBodies.get(entry.id);
+                    const dates = entry.data.end
+                      ? `${dateFormat.format(entry.data.start)} – ${dateFormat.format(entry.data.end)}`
+                      : `${dateFormat.format(entry.data.start)} – ${t("present")}`;
+                    return (
+                      <li class="relative pb-10 pl-8 last:pb-0">
+                        <span class="absolute top-1.5 left-0 size-3 -translate-x-1/2 rounded-full bg-pacific-cyan-500 ring-4 ring-tea-green-900" aria-hidden="true"></span>
+                        <h3 class="text-lg text-charcoal-blue-300">{entry.data.role}</h3>
+                        <p>{entry.data.place}</p>
+                        <p>{dates}</p>
+                        {ExperienceBody && (
+                          <div class="mt-2">
+                            <ExperienceBody />
+                          </div>
+                        )}
+                      </li>
+                    );
+                  })
+                : experiencePlaceholders.map(() => (
+                    <li class="relative pb-10 pl-8 last:pb-0">
+                      <span class="absolute top-1.5 left-0 size-3 -translate-x-1/2 rounded-full bg-pacific-cyan-500 ring-4 ring-tea-green-900" aria-hidden="true"></span>
+                      <h3 class:list={["text-lg", placeholder]}>{t("placeholder.experience.role")}</h3>
+                      <p class={placeholder}>{t("placeholder.experience.place")}</p>
+                      <p class={placeholder}>{t("placeholder.experience.dates")}</p>
+                      <p class:list={["mt-2", placeholder]}>{t("placeholder.experience.body")}</p>
+                    </li>
+                  ))
+            }
+          </ol>
+        </div>
+      </section>
+    </main>
+    <Footer locale={locale} />
+    <ContactBubble locale={locale} />
+  </body>
+</html>

@@ -1,0 +1,100 @@
+export const locales = ["es", "en", "ca"] as const;
+
+export type Locale = (typeof locales)[number];
+
+export const defaultLocale: Locale = "es";
+
+export const languageLabels: Record<Locale, string> = {
+  es: "Español",
+  en: "English",
+  ca: "Català",
+};
+
+export const languageShort: Record<Locale, string> = {
+  es: "ES",
+  en: "EN",
+  ca: "CA",
+};
+
+export const ui = {
+  es: {
+    "nav.label": "Secciones",
+    "nav.intro": "Inicio",
+    "nav.bio": "Bio",
+    "nav.focus": "Enfoque",
+    "nav.projects": "Proyectos",
+    "nav.experience": "Experiencia",
+    cta: "Contactar",
+    "footer.rights": "© {year}. Todos los derechos reservados.",
+    "footer.createdBy": "Creado por",
+    present: "Actualidad",
+    repo: "GitHub",
+    "placeholder.name": "Nombre",
+    "placeholder.role": "Rol",
+    "placeholder.sentence": "Una frase sobre ti.",
+    "placeholder.bio": "Unos párrafos de bio.",
+    "placeholder.focus": "En qué trabajas ahora.",
+    "placeholder.project.title": "Título del proyecto",
+    "placeholder.project.summary": "Una línea sobre el proyecto.",
+    "placeholder.project.stack": "Stack",
+    "placeholder.project.url": "https://ejemplo.com",
+    "placeholder.experience.role": "Rol",
+    "placeholder.experience.place": "Sitio",
+    "placeholder.experience.dates": "Fechas",
+    "placeholder.experience.body": "Qué hiciste.",
+  },
+  en: {
+    "nav.label": "Sections",
+    "nav.intro": "Intro",
+    "nav.bio": "Bio",
+    "nav.focus": "Focus",
+    "nav.projects": "Projects",
+    "nav.experience": "Experience",
+    cta: "Get in touch",
+    "footer.rights": "© {year}. All rights reserved.",
+    "footer.createdBy": "Created by",
+    present: "Present",
+    repo: "GitHub",
+    "placeholder.name": "Name",
+    "placeholder.role": "Role",
+    "placeholder.sentence": "One sentence about you.",
+    "placeholder.bio": "A few bio paragraphs.",
+    "placeholder.focus": "The kind of work you want now.",
+    "placeholder.project.title": "Project title",
+    "placeholder.project.summary": "One line about the project.",
+    "placeholder.project.stack": "Stack",
+    "placeholder.project.url": "https://example.com",
+    "placeholder.experience.role": "Role",
+    "placeholder.experience.place": "Place",
+    "placeholder.experience.dates": "Dates",
+    "placeholder.experience.body": "What you did.",
+  },
+  ca: {
+    "nav.label": "Seccions",
+    "nav.intro": "Inici",
+    "nav.bio": "Bio",
+    "nav.focus": "Enfocament",
+    "nav.projects": "Projectes",
+    "nav.experience": "Experiència",
+    cta: "Contactar",
+    "footer.rights": "© {year}. Tots els drets reservats.",
+    "footer.createdBy": "Creat per",
+    present: "Actualitat",
+    repo: "GitHub",
+    "placeholder.name": "Nom",
+    "placeholder.role": "Rol",
+    "placeholder.sentence": "Una frase sobre tu.",
+    "placeholder.bio": "Uns paràgrafs de bio.",
+    "placeholder.focus": "En què treballes ara.",
+    "placeholder.project.title": "Títol del projecte",
+    "placeholder.project.summary": "Una línia sobre el projecte.",
+    "placeholder.project.stack": "Stack",
+    "placeholder.project.url": "https://exemple.com",
+    "placeholder.experience.role": "Rol",
+    "placeholder.experience.place": "Lloc",
+    "placeholder.experience.dates": "Dates",
+    "placeholder.experience.body": "Què vas fer.",
+  },
+} as const;
+
+export type UiKey = keyof (typeof ui)["es"];

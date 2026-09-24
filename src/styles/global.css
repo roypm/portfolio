@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+/* Scales run from 100 (darkest) to 900 (lightest). 500 is the named color. */
+@theme {
+  --color-tea-green-100: #1d391e;
+  --color-tea-green-200: #39723b;
+  --color-tea-green-300: #57aa5a;
+  --color-tea-green-400: #90c792;
+  --color-tea-green-500: #c9e4ca;
+  --color-tea-green-600: #d4e9d4;
+  --color-tea-green-700: #deefdf;
+  --color-tea-green-800: #e9f4ea;
+  --color-tea-green-900: #f4faf4;
+
+  --color-muted-teal-100: #172920;
+  --color-muted-teal-200: #2e5241;
+  --color-muted-teal-300: #457b61;
+  --color-muted-teal-400: #5da482;
+  --color-muted-teal-500: #87bba2;
+  --color-muted-teal-600: #9ec9b4;
+  --color-muted-teal-700: #b7d6c7;
+  --color-muted-teal-800: #cfe4da;
+  --color-muted-teal-900: #e7f1ec;
+
+  --color-pacific-cyan-100: #111a1c;
+  --color-pacific-cyan-200: #223438;
+  --color-pacific-cyan-300: #334e53;
+  --color-pacific-cyan-400: #44686f;
+  --color-pacific-cyan-500: #55828b;
+  --color-pacific-cyan-600: #719fa8;
+  --color-pacific-cyan-700: #95b7be;
+  --color-pacific-cyan-800: #b8cfd4;
+  --color-pacific-cyan-900: #dce7e9;
+
+  --color-dark-slate-grey-100: #0c1314;
+  --color-dark-slate-grey-200: #172628;
+  --color-dark-slate-grey-300: #23393c;
+  --color-dark-slate-grey-400: #2f4c50;
+  --color-dark-slate-grey-500: #3b6064;
+  --color-dark-slate-grey-600: #558a90;
+  --color-dark-slate-grey-700: #7aabb1;
+  --color-dark-slate-grey-800: #a6c7cb;
+  --color-dark-slate-grey-900: #d3e3e5;
+
+  --color-charcoal-blue-100: #0b0f12;
+  --color-charcoal-blue-200: #161d23;
+  --color-charcoal-blue-300: #212c35;
+  --color-charcoal-blue-400: #2b3b47;
+  --color-charcoal-blue-500: #364958;
+  --color-charcoal-blue-600: #527086;
+  --color-charcoal-blue-700: #7694ab;
+  --color-charcoal-blue-800: #a4b8c7;
+  --color-charcoal-blue-900: #d1dbe3;
+}
