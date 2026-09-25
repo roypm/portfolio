@@ -52,3 +52,351 @@
   --color-charcoal-blue-800: #a4b8c7;
   --color-charcoal-blue-900: #d1dbe3;
 }
+
+/* Palette choice replaces the garden role colors. Steps the page uses:
+   tea-green 900 page and button label, 800 raised surfaces;
+   muted-teal 800 selected fill; pacific-cyan 500 accent;
+   dark-slate-grey 800 borders, 600 muted text;
+   charcoal-blue 300 headings, 500 body, 100 overlay. */
+html[data-palette="blossom"] {
+  --color-tea-green-100: #61001a;
+  --color-tea-green-200: #c20034;
+  --color-tea-green-300: #ff245e;
+  --color-tea-green-400: #ff85a5;
+  --color-tea-green-500: #ffe5ec;
+  --color-tea-green-600: #ffebf0;
+  --color-tea-green-700: #fff0f4;
+  --color-tea-green-800: #ffc2d1;
+  --color-tea-green-900: #ffe5ec;
+
+  --color-muted-teal-100: #5a0016;
+  --color-muted-teal-200: #b4002d;
+  --color-muted-teal-300: #ff0e4a;
+  --color-muted-teal-400: #ff688e;
+  --color-muted-teal-500: #ffc2d1;
+  --color-muted-teal-600: #ffceda;
+  --color-muted-teal-700: #ffdae3;
+  --color-muted-teal-800: #ffb3c6;
+  --color-muted-teal-900: #fff3f6;
+
+  --color-pacific-cyan-100: #470213;
+  --color-pacific-cyan-200: #8d0426;
+  --color-pacific-cyan-300: #d40539;
+  --color-pacific-cyan-400: #f9285d;
+  --color-pacific-cyan-500: #8d0426;
+  --color-pacific-cyan-600: #fc8ca8;
+  --color-pacific-cyan-700: #fda8be;
+  --color-pacific-cyan-800: #fec5d3;
+  --color-pacific-cyan-900: #fee2e9;
+
+  --color-dark-slate-grey-100: #500014;
+  --color-dark-slate-grey-200: #9f0028;
+  --color-dark-slate-grey-300: #ef003c;
+  --color-dark-slate-grey-400: #ff3f6f;
+  --color-dark-slate-grey-500: #ff8fab;
+  --color-dark-slate-grey-600: #9f0028;
+  --color-dark-slate-grey-700: #ffbccd;
+  --color-dark-slate-grey-800: #ad002b;
+  --color-dark-slate-grey-900: #ffe9ee;
+
+  --color-charcoal-blue-100: #470213;
+  --color-charcoal-blue-200: #570016;
+  --color-charcoal-blue-300: #470213;
+  --color-charcoal-blue-400: #61001a;
+  --color-charcoal-blue-500: #61001a;
+  --color-charcoal-blue-600: #8d0426;
+  --color-charcoal-blue-700: #d40539;
+  --color-charcoal-blue-800: #fb6f92;
+  --color-charcoal-blue-900: #ffe5ec;
+}
+
+html[data-palette="garnet"] {
+  color-scheme: dark;
+
+  --color-tea-green-100: #030101;
+  --color-tea-green-200: #060202;
+  --color-tea-green-300: #090303;
+  --color-tea-green-400: #0c0505;
+  --color-tea-green-500: #0f0606;
+  --color-tea-green-600: #552222;
+  --color-tea-green-700: #9b3e3e;
+  --color-tea-green-800: #490000;
+  --color-tea-green-900: #0f0606;
+
+  --color-muted-teal-100: #060202;
+  --color-muted-teal-200: #0c0404;
+  --color-muted-teal-300: #120606;
+  --color-muted-teal-400: #180808;
+  --color-muted-teal-500: #200b0b;
+  --color-muted-teal-600: #642222;
+  --color-muted-teal-700: #aa3a3a;
+  --color-muted-teal-800: #2f0000;
+  --color-muted-teal-900: #e7b9b9;
+
+  --color-pacific-cyan-100: #140000;
+  --color-pacific-cyan-200: #290000;
+  --color-pacific-cyan-300: #3d0000;
+  --color-pacific-cyan-400: #520000;
+  --color-pacific-cyan-500: #ff5c5c;
+  --color-pacific-cyan-600: #b80000;
+  --color-pacific-cyan-700: #ff0a0a;
+  --color-pacific-cyan-800: #ff5c5c;
+  --color-pacific-cyan-900: #ffadad;
+
+  --color-dark-slate-grey-100: #140000;
+  --color-dark-slate-grey-200: #290000;
+  --color-dark-slate-grey-300: #3d0000;
+  --color-dark-slate-grey-400: #520000;
+  --color-dark-slate-grey-500: #650000;
+  --color-dark-slate-grey-600: #c77373;
+  --color-dark-slate-grey-700: #aa3a3a;
+  --color-dark-slate-grey-800: #c77373;
+  --color-dark-slate-grey-900: #e3b9b9;
+
+  --color-charcoal-blue-100: #030101;
+  --color-charcoal-blue-200: #200b0b;
+  --color-charcoal-blue-300: #ffadad;
+  --color-charcoal-blue-400: #e7b9b9;
+  --color-charcoal-blue-500: #e3b9b9;
+  --color-charcoal-blue-600: #c77373;
+  --color-charcoal-blue-700: #9b3e3e;
+  --color-charcoal-blue-800: #552222;
+  --color-charcoal-blue-900: #0f0606;
+}
+
+html[data-palette="slate"] {
+  --color-tea-green-100: #272d34;
+  --color-tea-green-200: #4e5b67;
+  --color-tea-green-300: #788899;
+  --color-tea-green-400: #abb6c0;
+  --color-tea-green-500: #dee2e6;
+  --color-tea-green-600: #e5e9ec;
+  --color-tea-green-700: #eceef1;
+  --color-tea-green-800: #f8f9fa;
+  --color-tea-green-900: #dee2e6;
+
+  --color-muted-teal-100: #242a30;
+  --color-muted-teal-200: #495561;
+  --color-muted-teal-300: #6d7f91;
+  --color-muted-teal-400: #9da9b5;
+  --color-muted-teal-500: #ced4da;
+  --color-muted-teal-600: #d7dce1;
+  --color-muted-teal-700: #e1e5e9;
+  --color-muted-teal-800: #ced4da;
+  --color-muted-teal-900: #f5f6f8;
+
+  --color-pacific-cyan-100: #0b0c0d;
+  --color-pacific-cyan-200: #15171a;
+  --color-pacific-cyan-300: #202327;
+  --color-pacific-cyan-400: #2a2f34;
+  --color-pacific-cyan-500: #343a40;
+  --color-pacific-cyan-600: #58626c;
+  --color-pacific-cyan-700: #7d8995;
+  --color-pacific-cyan-800: #a9b0b8;
+  --color-pacific-cyan-900: #d4d8dc;
+
+  --color-dark-slate-grey-100: #0e1011;
+  --color-dark-slate-grey-200: #1d2022;
+  --color-dark-slate-grey-300: #2b2f34;
+  --color-dark-slate-grey-400: #3a3f45;
+  --color-dark-slate-grey-500: #495057;
+  --color-dark-slate-grey-600: #495057;
+  --color-dark-slate-grey-700: #8c959f;
+  --color-dark-slate-grey-800: #495057;
+  --color-dark-slate-grey-900: #d9dcdf;
+
+  --color-charcoal-blue-100: #212529;
+  --color-charcoal-blue-200: #15171a;
+  --color-charcoal-blue-300: #212529;
+  --color-charcoal-blue-400: #2a2f34;
+  --color-charcoal-blue-500: #343a40;
+  --color-charcoal-blue-600: #495057;
+  --color-charcoal-blue-700: #6c757d;
+  --color-charcoal-blue-800: #adb5bd;
+  --color-charcoal-blue-900: #dee2e6;
+}
+
+html[data-palette="night"] {
+  color-scheme: dark;
+
+  --color-tea-green-100: #f8f9fa;
+  --color-tea-green-200: #e9ecef;
+  --color-tea-green-300: #dee2e6;
+  --color-tea-green-400: #ced4da;
+  --color-tea-green-500: #adb5bd;
+  --color-tea-green-600: #6c757d;
+  --color-tea-green-700: #495057;
+  --color-tea-green-800: #495057;
+  --color-tea-green-900: #343a40;
+
+  --color-muted-teal-100: #f5f6f8;
+  --color-muted-teal-200: #ebeef0;
+  --color-muted-teal-300: #e1e5e9;
+  --color-muted-teal-400: #d7dce1;
+  --color-muted-teal-500: #ced4da;
+  --color-muted-teal-600: #9da9b5;
+  --color-muted-teal-700: #6d7f91;
+  --color-muted-teal-800: #2b2f34;
+  --color-muted-teal-900: #242a30;
+
+  --color-pacific-cyan-100: #f8f9fa;
+  --color-pacific-cyan-200: #e9ecef;
+  --color-pacific-cyan-300: #dee2e6;
+  --color-pacific-cyan-400: #ced4da;
+  --color-pacific-cyan-500: #f8f9fa;
+  --color-pacific-cyan-600: #adb5bd;
+  --color-pacific-cyan-700: #6c757d;
+  --color-pacific-cyan-800: #495057;
+  --color-pacific-cyan-900: #343a40;
+
+  --color-dark-slate-grey-100: #f8f9fa;
+  --color-dark-slate-grey-200: #e9ecef;
+  --color-dark-slate-grey-300: #dee2e6;
+  --color-dark-slate-grey-400: #ced4da;
+  --color-dark-slate-grey-500: #adb5bd;
+  --color-dark-slate-grey-600: #ced4da;
+  --color-dark-slate-grey-700: #adb5bd;
+  --color-dark-slate-grey-800: #adb5bd;
+  --color-dark-slate-grey-900: #6c757d;
+
+  --color-charcoal-blue-100: #212529;
+  --color-charcoal-blue-200: #343a40;
+  --color-charcoal-blue-300: #f8f9fa;
+  --color-charcoal-blue-400: #e9ecef;
+  --color-charcoal-blue-500: #e9ecef;
+  --color-charcoal-blue-600: #ced4da;
+  --color-charcoal-blue-700: #adb5bd;
+  --color-charcoal-blue-800: #6c757d;
+  --color-charcoal-blue-900: #343a40;
+}
+
+/* Wide screen: top, left, or right from data-nav-placement. Narrow screen: always bottom. */
+[data-nav-bar] {
+  position: fixed;
+  z-index: 30;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  inset-inline: 0;
+  top: 0;
+  padding: 0.75rem;
+}
+
+[data-nav-cluster] {
+  pointer-events: auto;
+  display: flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+[data-nav-icon] {
+  display: none;
+}
+
+@media (width < 48rem) {
+  [data-nav-bar] {
+    top: auto;
+    bottom: 0;
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+  }
+
+  main {
+    padding-top: 2rem;
+  }
+
+  body {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .scroll-mt-24 {
+    scroll-margin-top: 1.5rem;
+  }
+
+  [data-contact] {
+    bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (width >= 48rem) {
+  html[data-nav-placement="left"] [data-nav-bar],
+  html[data-nav-placement="right"] [data-nav-bar] {
+    inset: 0;
+    align-items: center;
+    padding: 0;
+  }
+
+  html[data-nav-placement="left"] [data-nav-bar] {
+    justify-content: flex-start;
+  }
+
+  html[data-nav-placement="right"] [data-nav-bar] {
+    justify-content: flex-end;
+  }
+
+  html[data-nav-placement="left"] [data-nav-cluster] {
+    margin-left: max(0.75rem, calc((50% - 36rem - 3.375rem + 0.75rem) / 2));
+  }
+
+  html[data-nav-placement="right"] [data-nav-cluster] {
+    margin-right: max(0.75rem, calc((50% - 36rem - 3.375rem + 0.75rem) / 2));
+  }
+
+  html[data-nav-placement="left"] [data-nav-cluster],
+  html[data-nav-placement="right"] [data-nav-cluster],
+  html[data-nav-placement="left"] [data-nav-list],
+  html[data-nav-placement="right"] [data-nav-list] {
+    flex-direction: column;
+  }
+
+  html[data-nav-placement="left"] [data-nav-menu],
+  html[data-nav-placement="right"] [data-nav-menu] {
+    overflow: visible;
+  }
+
+  html[data-nav-placement="left"] [data-nav],
+  html[data-nav-placement="right"] [data-nav] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+  }
+
+  html[data-nav-placement="left"] [data-nav-icon],
+  html[data-nav-placement="right"] [data-nav-icon] {
+    display: flex;
+  }
+
+  html[data-nav-placement="left"] [data-nav-label],
+  html[data-nav-placement="right"] [data-nav-label] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  html[data-nav-placement="right"] [data-contact] {
+    right: 4.75rem;
+  }
+}
+
+@media (width >= 48rem) and (width < 80.25rem) {
+  body {
+    padding-left: 4rem;
+    padding-right: 4rem;
+  }
+}
+
+@media (width >= 80.25rem) {
+
+  html[data-nav-placement="right"] [data-contact] {
+    right: 1.25rem;
+  }
+}

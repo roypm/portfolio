@@ -1,0 +1,52 @@
+---
+import type { Locale } from "../i18n/ui";
+import { useTranslations } from "../i18n/utils";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const fieldClass =
+  "w-full rounded-lg border border-dark-slate-grey-800 bg-tea-green-900 px-3 py-1.5 text-sm text-charcoal-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pacific-cyan-500";
+---
+
+<section id="contact" class="mt-16 scroll-mt-24">
+  <div class="mb-3 h-px bg-pacific-cyan-500" aria-hidden="true"></div>
+  <div class="grid items-start gap-8 md:grid-cols-2 md:gap-10">
+    <div>
+      <h2 class="text-3xl text-charcoal-blue-300">{t("contact.title")}</h2>
+      <p class="mt-4 text-lg">{t("contact.lead")}</p>
+    </div>
+    <form data-contact-form class="flex flex-col gap-2" novalidate>
+      <label class="flex flex-col gap-1 text-sm text-charcoal-blue-500">
+        {t("contact.name")}
+        <input class={fieldClass} type="text" name="name" autocomplete="name" />
+      </label>
+      <label class="flex flex-col gap-1 text-sm text-charcoal-blue-500">
+        {t("contact.email")}
+        <input class={fieldClass} type="email" name="email" autocomplete="email" />
+      </label>
+      <label class="flex flex-col gap-1 text-sm text-charcoal-blue-500">
+        {t("contact.message")}
+        <textarea class={`${fieldClass} min-h-20 resize-y`} name="message" rows="4"></textarea>
+      </label>
+      <button
+        type="submit"
+        class="mt-1 inline-flex h-10 items-center justify-center self-start rounded-full bg-pacific-cyan-500 px-5 text-sm text-tea-green-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pacific-cyan-500"
+      >
+        {t("contact.send")}
+      </button>
+    </form>
+  </div>
+</section>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
+
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    form.reset();
+  });
+</script>

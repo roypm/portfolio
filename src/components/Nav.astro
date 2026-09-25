@@ -1,8 +1,6 @@
 ---
-import { repositoryUrl } from "../config";
-import ExternalLink from "./ExternalLink.astro";
-import GithubIcon from "./GithubIcon.astro";
-import LanguageMenu from "./LanguageMenu.astro";
+import { Briefcase, FolderKanban, GraduationCap, User } from "@lucide/astro";
+import SettingsPanel from "./SettingsPanel.astro";
 import { type Locale, type UiKey } from "../i18n/ui";
 import { useTranslations } from "../i18n/utils";
 
@@ -13,35 +11,41 @@ interface Props {
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 
-const sections = ["intro", "projects", "experience"] as const;
+const sections = [
+  { id: "intro", Icon: User },
+  { id: "projects", Icon: FolderKanban },
+  { id: "experience", Icon: Briefcase },
+  { id: "education", Icon: GraduationCap },
+] as const;
 ---
 
-<header class="fixed inset-x-0 top-0 z-10 bg-tea-green-900">
-  <div class="mx-auto max-w-6xl px-4">
-  <nav class="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-dark-slate-grey-800 py-3" aria-label={t("nav.label")}>
-    <ul class="flex flex-wrap gap-x-4 gap-y-1">
-      {
-        sections.map((id) => (
-          <li>
-            <a
-              data-nav
-              class="text-charcoal-blue-500 aria-[current=location]:text-pacific-cyan-500"
-              href={`#${id}`}
-            >
-              {t(`nav.${id}` as UiKey)}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-    <div class="ml-auto flex items-center gap-4">
-      <LanguageMenu locale={locale} />
-      <ExternalLink class="inline-flex items-center gap-1 text-charcoal-blue-500" href={repositoryUrl}>
-        <GithubIcon />
-        {t("repo")}
-      </ExternalLink>
-    </div>
-  </nav>
+<header data-nav-bar>
+  <div data-nav-cluster>
+    <nav
+      data-nav-menu
+      class="flex min-w-0 overflow-x-auto rounded-full border border-dark-slate-grey-800 bg-tea-green-800 px-1.5 py-1.5 shadow-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      aria-label={t("nav.label")}
+    >
+      <ul data-nav-list class="flex items-center gap-0.5 sm:gap-1">
+        {
+          sections.map(({ id, Icon }) => (
+            <li>
+              <a
+                data-nav
+                class="relative block rounded-full px-2 py-1.5 text-sm whitespace-nowrap text-charcoal-blue-500 aria-[current=location]:bg-muted-teal-800 aria-[current=location]:text-pacific-cyan-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pacific-cyan-500 sm:px-3 sm:text-base"
+                href={`#${id}`}
+              >
+                <span data-nav-icon>
+                  <Icon size={18} aria-hidden="true" />
+                </span>
+                <span data-nav-label>{t(`nav.${id}` as UiKey)}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <SettingsPanel locale={locale} />
   </div>
 </header>
 
@@ -59,7 +63,8 @@ const sections = ["intro", "projects", "experience"] as const;
   }
 
   function highlightSectionAtTop() {
-    const marker = 96;
+    const margin = sections[0] ? Number.parseFloat(getComputedStyle(sections[0]).scrollMarginTop) : 0;
+    const marker = margin + 8;
     let current = sections[0];
     let bestTop = Number.NEGATIVE_INFINITY;
     for (const section of sections) {

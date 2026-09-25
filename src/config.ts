@@ -4,5 +4,5 @@ export const authorName = "roypm";
 
 export const authorUrl = "https://github.com/roypm";
 
-/** Public contact address. The mailto bubble stays visible, but it is not a link until this is set. */
-export const email = "";
+/** Public contact address. The contact form does not send yet. */
+export const email = "roymoli15@gmail.com";

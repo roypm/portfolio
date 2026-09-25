@@ -1,6 +1,5 @@
 ---
 import { Mail } from "@lucide/astro";
-import { email } from "../config";
 import type { Locale } from "../i18n/ui";
 import { useTranslations } from "../i18n/utils";
 
@@ -10,20 +9,13 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = useTranslations(locale);
-const classes =
-  "fixed right-5 bottom-5 z-20 inline-flex size-14 items-center justify-center rounded-full bg-pacific-cyan-500 text-tea-green-900 shadow-md md:h-12 md:w-auto md:gap-2 md:px-5";
 ---
 
-{
-  email ? (
-    <a class={classes} href={`mailto:${email}`} aria-label={t("cta")}>
-      <Mail size={20} aria-hidden="true" />
-      <span class="sr-only md:not-sr-only">{t("cta")}</span>
-    </a>
-  ) : (
-    <div class={classes} role="note" aria-label={t("cta")}>
-      <Mail size={20} aria-hidden="true" />
-      <span class="sr-only md:not-sr-only">{t("cta")}</span>
-    </div>
-  )
-}
+<a
+  data-contact
+  href="#contact"
+  class="fixed right-5 bottom-5 z-20 inline-flex size-14 items-center justify-center rounded-full bg-pacific-cyan-500 text-tea-green-900 shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pacific-cyan-500 md:h-12 md:w-auto md:gap-2 md:px-5"
+>
+  <Mail size={20} aria-hidden="true" />
+  <span class="sr-only md:not-sr-only">{t("cta")}</span>
+</a>

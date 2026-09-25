@@ -24,6 +24,7 @@ const projects = defineCollection({
       stack: z.array(z.string()).default([]),
       url: z.string().url().optional(),
       order: z.number(),
+      pinned: z.boolean().default(false),
     }),
 });
 
@@ -37,4 +38,31 @@ const experience = defineCollection({
   }),
 });
 
-export const collections = { home, projects, experience };
+const education = defineCollection({
+  loader: glob({ pattern: "**/*.mdx", base: "./src/content/education" }),
+  schema: z.object({
+    kind: z.enum(["degree", "course"]),
+    hidden: z.boolean().default(false),
+    title: z.string(),
+    place: z.string(),
+    start: z.coerce.date(),
+    end: z.coerce.date().optional(),
+    certificate: z
+      .string()
+      .refine(
+        (value) =>
+          (value.startsWith("/certificates/") &&
+            /\.(pdf|png|jpe?g|webp)$/i.test(value)) ||
+          value.startsWith("https://"),
+        "Use a PDF or image in public/certificates or an https URL",
+      )
+      .optional(),
+    url: z
+      .string()
+      .url()
+      .refine((value) => value.startsWith("https://"), "Use an https URL")
+      .optional(),
+  }),
+});
+
+export const collections = { home, projects, experience, education };

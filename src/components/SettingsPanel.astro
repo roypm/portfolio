@@ -1,0 +1,301 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { PanelLeft, PanelRight, PanelTop, Settings, X } from "@lucide/astro";
+import ExternalLink from "./ExternalLink.astro";
+import Flag from "./Flag.astro";
+import GithubIcon from "./GithubIcon.astro";
+import { repositoryUrl } from "../config";
+import { languageLabels, locales, type Locale } from "../i18n/ui";
+import { useTranslations } from "../i18n/utils";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const placements = [
+  { id: "top", Icon: PanelTop },
+  { id: "left", Icon: PanelLeft },
+  { id: "right", Icon: PanelRight },
+] as const;
+
+const palettes = [
+  { id: "slate", swatches: ["#f8f9fa", "#dee2e6", "#adb5bd", "#6c757d", "#212529"] },
+  { id: "night", swatches: ["#343a40", "#495057", "#6c757d", "#ced4da", "#f8f9fa"] },
+  { id: "garden", swatches: ["#c9e4ca", "#87bba2", "#55828b", "#3b6064", "#364958"] },
+  { id: "blossom", swatches: ["#ffe5ec", "#ffc2d1", "#ffb3c6", "#ff8fab", "#fb6f92"] },
+  { id: "garnet", swatches: ["#0f0606", "#2f0000", "#650000", "#b80000", "#ff5c5c"] },
+] as const;
+---
+
+<button
+  type="button"
+  data-settings-open
+  class="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-dark-slate-grey-800 bg-tea-green-800 text-charcoal-blue-500 shadow-md sm:size-11"
+  aria-haspopup="dialog"
+  aria-expanded="false"
+  aria-controls="settings-panel"
+  aria-label={t("settings.open")}
+>
+  <Settings size={18} aria-hidden="true" />
+</button>
+
+<div data-settings hidden class="pointer-events-auto fixed inset-0 z-40">
+  <div data-settings-backdrop class="absolute inset-0 bg-charcoal-blue-100/40"></div>
+  <aside
+    id="settings-panel"
+    data-settings-panel
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="settings-title"
+    tabindex="-1"
+    class="absolute inset-y-0 right-0 flex w-80 max-w-[calc(100%-1.5rem)] flex-col border-l border-dark-slate-grey-800 bg-tea-green-800 shadow-md"
+  >
+    <div class="flex items-center justify-between border-b border-dark-slate-grey-800 px-4 py-4">
+      <h2 id="settings-title" class="text-lg text-charcoal-blue-300">{t("settings.open")}</h2>
+      <button
+        type="button"
+        data-settings-close
+        class="inline-flex size-9 items-center justify-center rounded-full text-charcoal-blue-500"
+        aria-label={t("settings.close")}
+      >
+        <X size={18} aria-hidden="true" />
+      </button>
+    </div>
+    <div class="flex-1 overflow-y-auto px-4 py-5">
+      <section>
+        <h3 class="text-charcoal-blue-500">{t("settings.language")}</h3>
+        <ul class="mt-2">
+          {
+            locales.map((code) => (
+              <li>
+                <a
+                  data-locale-switch
+                  aria-current={code === locale ? "true" : undefined}
+                  class:list={[
+                    "flex items-center gap-3 rounded-lg px-3 py-2 text-charcoal-blue-500",
+                    code === locale && "bg-muted-teal-800 text-pacific-cyan-500",
+                  ]}
+                  href={getRelativeLocaleUrl(code, "/")}
+                  hreflang={code}
+                >
+                  <Flag locale={code} />
+                  {languageLabels[code]}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+      <section class="mt-8 hidden md:block">
+        <h3 id="settings-nav-placement" class="text-charcoal-blue-500">{t("settings.navPlacement")}</h3>
+        <div class="mt-2" role="radiogroup" aria-labelledby="settings-nav-placement">
+          {
+            placements.map(({ id, Icon }) => (
+              <button
+                type="button"
+                role="radio"
+                data-nav-placement-option={id}
+                aria-checked={id === "top" ? "true" : "false"}
+                tabindex={id === "top" ? 0 : -1}
+                class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-charcoal-blue-500 aria-checked:bg-muted-teal-800 aria-checked:text-pacific-cyan-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pacific-cyan-500"
+              >
+                <Icon size={18} aria-hidden="true" />
+                {t(`settings.navPlacement.${id}`)}
+              </button>
+            ))
+          }
+        </div>
+      </section>
+      <section class="mt-8">
+        <h3 id="settings-palette" class="text-charcoal-blue-500">{t("settings.palette")}</h3>
+        <div class="mt-2" role="radiogroup" aria-labelledby="settings-palette">
+          {
+            palettes.map(({ id, swatches }) => (
+              <button
+                type="button"
+                role="radio"
+                data-palette-option={id}
+                aria-checked={id === "slate" ? "true" : "false"}
+                tabindex={id === "slate" ? 0 : -1}
+                class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-charcoal-blue-500 aria-checked:bg-muted-teal-800 aria-checked:text-pacific-cyan-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pacific-cyan-500"
+              >
+                <span class="flex shrink-0 gap-1" aria-hidden="true">
+                  {swatches.map((color) => (
+                    <span
+                      class="size-3.5 rounded-full ring-1 ring-charcoal-blue-500/30 ring-inset"
+                      style={`background-color: ${color}`}
+                    />
+                  ))}
+                </span>
+                {t(`settings.palette.${id}`)}
+              </button>
+            ))
+          }
+        </div>
+      </section>
+    </div>
+    <div class="border-t border-dark-slate-grey-800 px-4 py-4">
+      <ExternalLink class="inline-flex items-center gap-2 text-charcoal-blue-500" href={repositoryUrl}>
+        <GithubIcon />
+        {t("repo")}
+      </ExternalLink>
+    </div>
+  </aside>
+</div>
+
+<script>
+  const openButton = document.querySelector<HTMLButtonElement>("[data-settings-open]");
+  const root = document.querySelector<HTMLElement>("[data-settings]");
+  const panel = document.querySelector<HTMLElement>("[data-settings-panel]");
+  const backdrop = document.querySelector<HTMLElement>("[data-settings-backdrop]");
+  const closeButton = document.querySelector<HTMLButtonElement>("[data-settings-close]");
+
+  if (openButton && root && panel && backdrop && closeButton) {
+    const focusable = () =>
+      [...panel.querySelectorAll<HTMLElement>("a[href], button:not([disabled])")];
+
+    const setOpen = (open: boolean) => {
+      root.hidden = !open;
+      openButton.setAttribute("aria-expanded", String(open));
+      if (open) closeButton.focus({ preventScroll: true });
+      else openButton.focus({ preventScroll: true });
+    };
+
+    openButton.addEventListener("click", () => setOpen(root.hidden));
+
+    closeButton.addEventListener("click", () => setOpen(false));
+
+    backdrop.addEventListener("click", () => setOpen(false));
+
+    document.addEventListener("keydown", (event) => {
+      if (root.hidden) return;
+      if (event.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const items = focusable();
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus({ preventScroll: true });
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus({ preventScroll: true });
+      }
+    });
+  }
+</script>
+
+<script>
+  const placementOptions = [
+    ...document.querySelectorAll<HTMLButtonElement>("[data-nav-placement-option]"),
+  ];
+
+  function readPlacement(value: string | null | undefined) {
+    if (value === "left" || value === "right" || value === "top") return value;
+    return "top";
+  }
+
+  function applyPlacement(placement: "top" | "left" | "right", persist: boolean) {
+    document.documentElement.dataset.navPlacement = placement;
+    for (const option of placementOptions) {
+      const selected = option.dataset.navPlacementOption === placement;
+      option.setAttribute("aria-checked", String(selected));
+      option.tabIndex = selected ? 0 : -1;
+    }
+    if (!persist) return;
+    try {
+      localStorage.setItem("nav-placement", placement);
+    } catch {
+      // Storage can be unavailable. The choice still applies for this visit.
+    }
+  }
+
+  if (placementOptions.length > 0) {
+    applyPlacement(readPlacement(document.documentElement.dataset.navPlacement), false);
+
+    for (const option of placementOptions) {
+      option.addEventListener("click", () => {
+        applyPlacement(readPlacement(option.dataset.navPlacementOption), true);
+      });
+    }
+
+    const group = placementOptions[0]?.closest<HTMLElement>("[role='radiogroup']");
+    group?.addEventListener("keydown", (event) => {
+      const current = document.activeElement;
+      if (!(current instanceof HTMLButtonElement) || !placementOptions.includes(current)) return;
+      const index = placementOptions.indexOf(current);
+      let next = index;
+      if (event.key === "ArrowDown" || event.key === "ArrowRight") next = (index + 1) % placementOptions.length;
+      else if (event.key === "ArrowUp" || event.key === "ArrowLeft")
+        next = (index - 1 + placementOptions.length) % placementOptions.length;
+      else if (event.key === "Home") next = 0;
+      else if (event.key === "End") next = placementOptions.length - 1;
+      else return;
+      event.preventDefault();
+      const target = placementOptions[next];
+      if (!target) return;
+      applyPlacement(readPlacement(target.dataset.navPlacementOption), true);
+      target.focus({ preventScroll: true });
+    });
+  }
+</script>
+
+<script>
+  const paletteOptions = [...document.querySelectorAll<HTMLButtonElement>("[data-palette-option]")];
+
+  function readPalette(value: string | null | undefined) {
+    if (value === "blossom" || value === "garnet" || value === "slate" || value === "night" || value === "garden") return value;
+    return "slate";
+  }
+
+  function applyPalette(palette: "garden" | "blossom" | "garnet" | "slate" | "night", persist: boolean) {
+    document.documentElement.dataset.palette = palette;
+    for (const option of paletteOptions) {
+      const selected = option.dataset.paletteOption === palette;
+      option.setAttribute("aria-checked", String(selected));
+      option.tabIndex = selected ? 0 : -1;
+    }
+    if (!persist) return;
+    try {
+      localStorage.setItem("palette", palette);
+    } catch {
+      // Storage can be unavailable. The choice still applies for this visit.
+    }
+  }
+
+  if (paletteOptions.length > 0) {
+    applyPalette(readPalette(document.documentElement.dataset.palette), false);
+
+    for (const option of paletteOptions) {
+      option.addEventListener("click", () => {
+        applyPalette(readPalette(option.dataset.paletteOption), true);
+      });
+    }
+
+    const paletteGroup = paletteOptions[0]?.closest<HTMLElement>("[role='radiogroup']");
+    paletteGroup?.addEventListener("keydown", (event) => {
+      const current = document.activeElement;
+      if (!(current instanceof HTMLButtonElement) || !paletteOptions.includes(current)) return;
+      const index = paletteOptions.indexOf(current);
+      let next = index;
+      if (event.key === "ArrowDown" || event.key === "ArrowRight") next = (index + 1) % paletteOptions.length;
+      else if (event.key === "ArrowUp" || event.key === "ArrowLeft")
+        next = (index - 1 + paletteOptions.length) % paletteOptions.length;
+      else if (event.key === "Home") next = 0;
+      else if (event.key === "End") next = paletteOptions.length - 1;
+      else return;
+      event.preventDefault();
+      const target = paletteOptions[next];
+      if (!target) return;
+      applyPalette(readPalette(target.dataset.paletteOption), true);
+      target.focus({ preventScroll: true });
+    });
+  }
+</script>

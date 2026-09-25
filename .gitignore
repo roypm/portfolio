@@ -1,5 +1,8 @@
 # build output
 dist/
+# local export of personal content
+portfolio-personal.zip
+.wrangler/
 # generated types
 .astro/
 
