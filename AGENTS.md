@@ -49,7 +49,7 @@ Order:
 4. Projects: one MDX entry per project (screenshot, stack, link)
 5. Experience: one MDX entry per role (place, dates, what was done)
 6. Education: qualifications on a timeline, then short courses. A course may link a PDF certificate
-7. Contact: on a wide screen, two columns. The first is a call to get in touch and a short line about an idea, a proposal, or a job offer. The second is a compact form: name, email, message, and a send button. On a narrow screen those columns stack. The send button clears the form and does not deliver the message yet
+7. Contact: on a wide screen, two columns. The first is a call to get in touch and a short line about an idea, a proposal, or a job offer. The second is a compact form: name, email, message, and a send button. On a narrow screen those columns stack. The send button delivers the message. On success it clears the form. On failure it keeps the values and shows an error
 
 A project gets its own URL only when it needs a long writeup.
 

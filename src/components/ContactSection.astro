@@ -1,4 +1,5 @@
 ---
+import { turnstileSiteKey } from "../config";
 import type { Locale } from "../i18n/ui";
 import { useTranslations } from "../i18n/utils";
 
@@ -19,22 +20,42 @@ const fieldClass =
       <h2 class="text-3xl text-charcoal-blue-300">{t("contact.title")}</h2>
       <p class="mt-4 text-lg">{t("contact.lead")}</p>
     </div>
-    <form data-contact-form class="flex flex-col gap-2" novalidate>
+    <form
+      data-contact-form
+      data-send={t("contact.send")}
+      data-sending={t("contact.sending")}
+      data-success={t("contact.success")}
+      data-error={t("contact.error")}
+      class="relative flex flex-col gap-2"
+      novalidate
+    >
       <label class="flex flex-col gap-1 text-sm text-charcoal-blue-500">
         {t("contact.name")}
-        <input class={fieldClass} type="text" name="name" autocomplete="name" />
+        <input class={fieldClass} type="text" name="name" autocomplete="name" required />
       </label>
       <label class="flex flex-col gap-1 text-sm text-charcoal-blue-500">
         {t("contact.email")}
-        <input class={fieldClass} type="email" name="email" autocomplete="email" />
+        <input class={fieldClass} type="email" name="email" autocomplete="email" required />
       </label>
       <label class="flex flex-col gap-1 text-sm text-charcoal-blue-500">
         {t("contact.message")}
-        <textarea class={`${fieldClass} min-h-20 resize-y`} name="message" rows="4"></textarea>
+        <textarea class={`${fieldClass} min-h-20 resize-y`} name="message" rows="4" required></textarea>
       </label>
+      <div class="pointer-events-none absolute m-[-1px] h-px w-px overflow-hidden border-0 p-0" aria-hidden="true">
+        <label>
+          Company
+          <input type="text" name="company" tabindex="-1" autocomplete="off" />
+        </label>
+      </div>
+      {
+        turnstileSiteKey && (
+          <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="auto"></div>
+        )
+      }
+      <p data-contact-status class="min-h-5 text-sm text-charcoal-blue-500" role="status" aria-live="polite"></p>
       <button
         type="submit"
-        class="mt-1 inline-flex h-10 items-center justify-center self-start rounded-full bg-pacific-cyan-500 px-5 text-sm text-tea-green-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pacific-cyan-500"
+        class="mt-1 inline-flex h-10 items-center justify-center self-start rounded-full bg-pacific-cyan-500 px-5 text-sm text-tea-green-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pacific-cyan-500 disabled:opacity-60"
       >
         {t("contact.send")}
       </button>
@@ -42,11 +63,66 @@ const fieldClass =
   </div>
 </section>
 
+{
+  turnstileSiteKey && (
+    <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+  )
+}
+
 <script>
+  import { visibleContact } from "../contact";
+
   const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
 
-  form?.addEventListener("submit", (event) => {
+  form?.addEventListener("submit", async (event) => {
     event.preventDefault();
-    form.reset();
+    const button = form.querySelector<HTMLButtonElement>("button[type=submit]");
+    const status = form.querySelector<HTMLElement>("[data-contact-status]");
+    if (!button || !status) return;
+
+    const data = new FormData(form);
+    const visible = visibleContact(data.get("name"), data.get("email"), data.get("message"));
+    if (!visible) {
+      status.textContent = form.dataset.error ?? "";
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = form.dataset.sending ?? "";
+    status.textContent = "";
+    form.setAttribute("aria-busy", "true");
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          ...visible,
+          company: String(data.get("company") ?? ""),
+          turnstileToken: String(data.get("cf-turnstile-response") ?? ""),
+        }),
+      });
+      const payload = (await response.json().catch(() => null)) as { ok?: boolean } | null;
+      if (!response.ok || !payload?.ok) {
+        status.textContent = form.dataset.error ?? "";
+        resetTurnstile();
+        return;
+      }
+      form.reset();
+      resetTurnstile();
+      status.textContent = form.dataset.success ?? "";
+    } catch {
+      status.textContent = form.dataset.error ?? "";
+      resetTurnstile();
+    } finally {
+      button.disabled = false;
+      button.textContent = form.dataset.send ?? "";
+      form.removeAttribute("aria-busy");
+    }
   });
+
+  function resetTurnstile() {
+    const widget = window as Window & { turnstile?: { reset: () => void } };
+    widget.turnstile?.reset();
+  }
 </script>
