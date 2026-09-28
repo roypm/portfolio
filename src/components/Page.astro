@@ -119,24 +119,25 @@ const coursePlaceholders = [0, 1];
     </script>
   </head>
   <body class="bg-tea-green-900 text-charcoal-blue-500">
+    <div class="fx-glow-field" aria-hidden="true"></div>
     <Nav locale={locale} />
     <main class="mx-auto max-w-6xl px-4 pt-24">
       <div class="grid items-start gap-10 md:grid-cols-2">
-      <section id="intro" class="scroll-mt-24">
+      <section id="intro" class="scroll-mt-24 fx-reveal" data-reveal style="--reveal-delay: 80ms">
         {
           home?.data.photo ? (
-            <Image src={home.data.photo} alt="" class="mb-4 size-24 rounded-full object-cover" />
+            <Image src={home.data.photo} alt="" class="mb-4 size-24 rounded-full object-cover ring-4 ring-pacific-cyan-500/30 shadow-lg" />
           ) : (
-            <div class="mb-4 size-24 rounded-full bg-muted-teal-800" aria-hidden="true"></div>
+            <div class="mb-4 size-24 rounded-full bg-muted-teal-800 ring-4 ring-pacific-cyan-500/30 shadow-lg" aria-hidden="true"></div>
           )
         }
-        <h1 class:list={["text-3xl text-charcoal-blue-300", !name && placeholder]}>{name || t("placeholder.name")}</h1>
-        <p class:list={[!role && placeholder]}>{role || t("placeholder.role")}</p>
-        <p class:list={["mt-2", !sentence && placeholder]}>{sentence || t("placeholder.sentence")}</p>
+        <h1 class:list={["fx-hero-title text-4xl font-semibold tracking-tight text-charcoal-blue-300 md:text-5xl", !name && placeholder]}>{name || t("placeholder.name")}</h1>
+        <p class:list={["mt-2 text-lg text-pacific-cyan-500", !role && placeholder]}>{role || t("placeholder.role")}</p>
+        <p class:list={["mt-3 max-w-xl text-lg leading-relaxed", !sentence && placeholder]}>{sentence || t("placeholder.sentence")}</p>
       </section>
 
       <div class="flex flex-col gap-10">
-      <section id="bio" class="scroll-mt-24">
+      <section id="bio" class="scroll-mt-24 fx-reveal" data-reveal style="--reveal-delay: 180ms">
         <h2 class="text-xl text-charcoal-blue-300">{t("nav.bio")}</h2>
         {
           hasBio && Bio ? (
@@ -147,7 +148,7 @@ const coursePlaceholders = [0, 1];
         }
       </section>
 
-      <section id="focus" class="scroll-mt-24">
+      <section id="focus" class="scroll-mt-24 fx-reveal" data-reveal style="--reveal-delay: 260ms">
         <h2 class="text-xl text-charcoal-blue-300">{t("nav.focus")}</h2>
         <p class:list={["mt-4", !focus && placeholder]}>{focus || t("placeholder.focus")}</p>
       </section>
@@ -155,14 +156,14 @@ const coursePlaceholders = [0, 1];
       </div>
 
       <section id="projects" class="mt-16 scroll-mt-24">
-        <div class="mb-3 h-px bg-pacific-cyan-500" aria-hidden="true"></div>
+        <div class="fx-section-line mb-3" aria-hidden="true"></div>
         <h2 class="text-xl text-charcoal-blue-300">{t("nav.projects")}</h2>
         <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
           {
             projects.length > 0
               ? projects.map((project) => {
                   const card =
-                    "relative flex h-full flex-col overflow-hidden rounded-lg border border-dark-slate-grey-800 bg-tea-green-800";
+                    "fx-card fx-glass relative flex h-full flex-col overflow-hidden rounded-2xl border border-dark-slate-grey-800 bg-tea-green-800";
                   const body = (
                     <>
                       {project.data.image && (
@@ -199,7 +200,7 @@ const coursePlaceholders = [0, 1];
                   );
                 })
               : projectPlaceholders.map(() => (
-                  <article class="flex h-full flex-col overflow-hidden rounded-lg border border-dark-slate-grey-800 bg-tea-green-800">
+                  <article class="fx-card fx-glass flex h-full flex-col overflow-hidden rounded-2xl border border-dark-slate-grey-800 bg-tea-green-800">
                     <div class="aspect-video w-full bg-muted-teal-800" aria-hidden="true"></div>
                     <div class="flex flex-1 flex-col p-4">
                       <h3 class:list={["text-lg", placeholder]}>{t("placeholder.project.title")}</h3>
@@ -214,10 +215,10 @@ const coursePlaceholders = [0, 1];
       </section>
 
       <section id="experience" class="mt-16 scroll-mt-24">
-        <div class="mb-3 h-px bg-pacific-cyan-500" aria-hidden="true"></div>
+        <div class="fx-section-line mb-3" aria-hidden="true"></div>
         <h2 class="text-xl text-charcoal-blue-300">{t("nav.experience")}</h2>
         <div class="relative mt-8 ml-2">
-          <div class="absolute top-2 bottom-2 left-0 w-px bg-pacific-cyan-500" aria-hidden="true"></div>
+          <div data-timeline-line data-reveal class="absolute top-2 bottom-2 left-0 w-px bg-gradient-to-b from-pacific-cyan-500 via-pacific-cyan-700 to-transparent" aria-hidden="true"></div>
           <ol>
             {
               experience.length > 0
@@ -227,8 +228,8 @@ const coursePlaceholders = [0, 1];
                       ? `${dateFormat.format(entry.data.start)} – ${dateFormat.format(entry.data.end)}`
                       : `${dateFormat.format(entry.data.start)} – ${t("present")}`;
                     return (
-                      <li class="relative pb-10 pl-8 last:pb-0">
-                        <span class="absolute top-1.5 left-0 size-3 -translate-x-1/2 rounded-full bg-pacific-cyan-500 ring-4 ring-tea-green-900" aria-hidden="true"></span>
+                      <li class="fx-reveal relative pb-10 pl-8 last:pb-0" data-reveal style={`--reveal-delay: ${Math.min(400, experience.indexOf(entry) * 90)}ms`}>
+                        <span data-timeline-dot class="absolute top-1.5 left-0 size-3 -translate-x-1/2 rounded-full bg-pacific-cyan-500 ring-4 ring-tea-green-900" aria-hidden="true"></span>
                         <h3 class="text-lg text-charcoal-blue-300">{entry.data.role}</h3>
                         <p>{entry.data.place}</p>
                         <p>{dates}</p>
@@ -255,18 +256,18 @@ const coursePlaceholders = [0, 1];
       </section>
 
       <section id="education" class="mt-16 scroll-mt-24">
-        <div class="mb-3 h-px bg-pacific-cyan-500" aria-hidden="true"></div>
+        <div class="fx-section-line mb-3" aria-hidden="true"></div>
         <h2 class="text-xl text-charcoal-blue-300">{t("nav.education")}</h2>
         <div class="relative mt-8 ml-2">
-          <div class="absolute top-2 bottom-2 left-0 w-px bg-pacific-cyan-500" aria-hidden="true"></div>
+          <div data-timeline-line data-reveal class="absolute top-2 bottom-2 left-0 w-px bg-gradient-to-b from-pacific-cyan-500 via-pacific-cyan-700 to-transparent" aria-hidden="true"></div>
           <ol>
             {
               degrees.length > 0
                 ? degrees.map((entry) => {
                     const DegreeBody = educationBodies.get(entry.id);
                     return (
-                      <li class="relative pb-10 pl-8 last:pb-0">
-                        <span class="absolute top-1.5 left-0 size-3 -translate-x-1/2 rounded-full bg-pacific-cyan-500 ring-4 ring-tea-green-900" aria-hidden="true"></span>
+                      <li class="fx-reveal relative pb-10 pl-8 last:pb-0" data-reveal style={`--reveal-delay: ${Math.min(400, degrees.indexOf(entry) * 90)}ms`}>
+                        <span data-timeline-dot class="absolute top-1.5 left-0 size-3 -translate-x-1/2 rounded-full bg-pacific-cyan-500 ring-4 ring-tea-green-900" aria-hidden="true"></span>
                         <h3 class="text-lg text-charcoal-blue-300">{entry.data.title}</h3>
                         <p>{entry.data.place}</p>
                         <p>{educationDates(entry.data.start, entry.data.end, "degree")}</p>
@@ -297,7 +298,7 @@ const coursePlaceholders = [0, 1];
             courses.length > 0
               ? courses.map((entry) => {
                   return (
-                    <li class="flex h-full flex-col rounded-lg border border-dark-slate-grey-800 bg-tea-green-800 p-3">
+                    <li class="fx-card fx-glass flex h-full flex-col rounded-2xl border border-dark-slate-grey-800 bg-tea-green-800 p-3">
                       <h4 class="text-charcoal-blue-300">{entry.data.title}</h4>
                       <p>{entry.data.place}</p>
                       <p>{educationDates(entry.data.start, entry.data.end, "course")}</p>
@@ -320,7 +321,7 @@ const coursePlaceholders = [0, 1];
                   );
                 })
               : coursePlaceholders.map(() => (
-                  <li class="flex h-full flex-col rounded-lg border border-dark-slate-grey-800 bg-tea-green-800 p-4">
+                  <li class="fx-card fx-glass flex h-full flex-col rounded-2xl border border-dark-slate-grey-800 bg-tea-green-800 p-4">
                     <h4 class:list={["text-lg", placeholder]}>{t("placeholder.course.title")}</h4>
                     <p class={placeholder}>{t("placeholder.course.place")}</p>
                     <p class={placeholder}>{t("placeholder.course.dates")}</p>
@@ -338,7 +339,7 @@ const coursePlaceholders = [0, 1];
     </main>
     <section aria-label={t("scroll.sample")} class="relative h-[300vh]">
       <div class="sticky top-0 flex h-screen items-center justify-center px-4">
-        <div class="flex aspect-video w-full max-w-4xl items-center justify-center rounded-lg border border-dashed border-dark-slate-grey-800 bg-muted-teal-800 p-6">
+        <div class="fx-glass flex aspect-video w-full max-w-4xl items-center justify-center rounded-2xl border border-dashed border-dark-slate-grey-800 bg-muted-teal-800 p-6">
           <p class="text-center italic text-dark-slate-grey-600">{t("scroll.sample")}</p>
         </div>
       </div>
@@ -365,6 +366,33 @@ const coursePlaceholders = [0, 1];
           requestAnimationFrame(place);
         });
         setTimeout(place, 400);
+      })();
+    </script>
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        root.classList.add("fx-motion");
+        var items = document.querySelectorAll("[data-reveal]");
+        if (!("IntersectionObserver" in window)) {
+          items.forEach(function (item) {
+            item.setAttribute("data-reveal", "in");
+          });
+          return;
+        }
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) return;
+              entry.target.setAttribute("data-reveal", "in");
+              observer.unobserve(entry.target);
+            });
+          },
+          { rootMargin: "0px 0px -8% 0px", threshold: 0.08 },
+        );
+        items.forEach(function (item) {
+          observer.observe(item);
+        });
       })();
     </script>
   </body>

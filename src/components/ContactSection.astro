@@ -13,10 +13,10 @@ const fieldClass =
   "w-full rounded-lg border border-dark-slate-grey-800 bg-tea-green-900 px-3 py-1.5 text-sm text-charcoal-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pacific-cyan-500";
 ---
 
-<section id="contact" class="mt-16 scroll-mt-24">
-  <div class="mb-3 h-px bg-pacific-cyan-500" aria-hidden="true"></div>
+<section id="contact" class="mt-16 scroll-mt-24 fx-reveal" data-reveal>
+  <div class="fx-section-line mb-3" aria-hidden="true"></div>
   <div class="grid items-start gap-8 md:grid-cols-2 md:gap-10">
-    <div>
+    <div class="fx-reveal" data-reveal style="--reveal-delay: 100ms">
       <h2 class="text-3xl text-charcoal-blue-300">{t("contact.title")}</h2>
       <p class="mt-4 text-lg">{t("contact.lead")}</p>
     </div>
@@ -26,20 +26,20 @@ const fieldClass =
       data-sending={t("contact.sending")}
       data-success={t("contact.success")}
       data-error={t("contact.error")}
-      class="relative flex flex-col gap-2"
+      class="fx-glass relative flex flex-col gap-2 rounded-2xl border border-dark-slate-grey-800 p-5 md:p-6"
       novalidate
     >
       <label class="flex flex-col gap-1 text-sm text-charcoal-blue-500">
         {t("contact.name")}
-        <input class={fieldClass} type="text" name="name" autocomplete="name" required />
+        <input class={`${fieldClass} transition-shadow duration-300`} type="text" name="name" autocomplete="name" required />
       </label>
       <label class="flex flex-col gap-1 text-sm text-charcoal-blue-500">
         {t("contact.email")}
-        <input class={fieldClass} type="email" name="email" autocomplete="email" required />
+        <input class={`${fieldClass} transition-shadow duration-300`} type="email" name="email" autocomplete="email" required />
       </label>
       <label class="flex flex-col gap-1 text-sm text-charcoal-blue-500">
         {t("contact.message")}
-        <textarea class={`${fieldClass} min-h-20 resize-y`} name="message" rows="4" required></textarea>
+        <textarea class={`${fieldClass} min-h-20 resize-y transition-shadow duration-300`} name="message" rows="4" required></textarea>
       </label>
       <div class="pointer-events-none absolute m-[-1px] h-px w-px overflow-hidden border-0 p-0" aria-hidden="true">
         <label>
@@ -55,7 +55,7 @@ const fieldClass =
       <p data-contact-status class="min-h-5 text-sm text-charcoal-blue-500" role="status" aria-live="polite"></p>
       <button
         type="submit"
-        class="mt-1 inline-flex h-10 items-center justify-center self-start rounded-full bg-pacific-cyan-500 px-5 text-sm text-tea-green-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pacific-cyan-500 disabled:opacity-60"
+        class="fx-button mt-1 inline-flex h-10 items-center justify-center self-start rounded-full bg-pacific-cyan-500 px-5 text-sm text-tea-green-900 shadow-md transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pacific-cyan-500 disabled:opacity-60"
       >
         {t("contact.send")}
       </button>
@@ -83,7 +83,7 @@ const fieldClass =
     const data = new FormData(form);
     const visible = visibleContact(data.get("name"), data.get("email"), data.get("message"));
     if (!visible) {
-      status.textContent = form.dataset.error ?? "";
+      setStatus(status, form.dataset.error ?? "", "error");
       return;
     }
 
@@ -104,15 +104,15 @@ const fieldClass =
       });
       const payload = (await response.json().catch(() => null)) as { ok?: boolean } | null;
       if (!response.ok || !payload?.ok) {
-        status.textContent = form.dataset.error ?? "";
+        setStatus(status, form.dataset.error ?? "", "error");
         resetTurnstile();
         return;
       }
       form.reset();
       resetTurnstile();
-      status.textContent = form.dataset.success ?? "";
+      setStatus(status, form.dataset.success ?? "", "success");
     } catch {
-      status.textContent = form.dataset.error ?? "";
+      setStatus(status, form.dataset.error ?? "", "error");
       resetTurnstile();
     } finally {
       button.disabled = false;
@@ -124,5 +124,11 @@ const fieldClass =
   function resetTurnstile() {
     const widget = window as Window & { turnstile?: { reset: () => void } };
     widget.turnstile?.reset();
+  }
+
+  function setStatus(element: HTMLElement, text: string, state: "success" | "error" | "") {
+    element.textContent = text;
+    if (state) element.dataset.state = state;
+    else delete element.dataset.state;
   }
 </script>

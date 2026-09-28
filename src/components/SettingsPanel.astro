@@ -33,7 +33,7 @@ const palettes = [
 <button
   type="button"
   data-settings-open
-  class="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-dark-slate-grey-800 bg-tea-green-800 text-charcoal-blue-500 shadow-md sm:size-11"
+  class="fx-glass inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-dark-slate-grey-800 bg-tea-green-800 text-charcoal-blue-500 sm:size-11"
   aria-haspopup="dialog"
   aria-expanded="false"
   aria-controls="settings-panel"
@@ -43,7 +43,7 @@ const palettes = [
 </button>
 
 <div data-settings hidden class="pointer-events-auto fixed inset-0 z-40">
-  <div data-settings-backdrop class="absolute inset-0 bg-charcoal-blue-100/40"></div>
+  <div data-settings-backdrop class="absolute inset-0 bg-charcoal-blue-100/40 backdrop-blur-sm"></div>
   <aside
     id="settings-panel"
     data-settings-panel
@@ -51,7 +51,7 @@ const palettes = [
     aria-modal="true"
     aria-labelledby="settings-title"
     tabindex="-1"
-    class="absolute inset-y-0 right-0 flex w-80 max-w-[calc(100%-1.5rem)] flex-col border-l border-dark-slate-grey-800 bg-tea-green-800 shadow-md"
+    class="fx-glass absolute inset-y-0 right-0 flex w-80 max-w-[calc(100%-1.5rem)] flex-col border-l border-dark-slate-grey-800 bg-tea-green-800"
   >
     <div class="flex items-center justify-between border-b border-dark-slate-grey-800 px-4 py-4">
       <h2 id="settings-title" class="text-lg text-charcoal-blue-300">{t("settings.open")}</h2>
@@ -154,14 +154,26 @@ const palettes = [
   const closeButton = document.querySelector<HTMLButtonElement>("[data-settings-close]");
 
   if (openButton && root && panel && backdrop && closeButton) {
+    let closeTimer = 0;
+    const closeDelay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 320;
+
     const focusable = () =>
       [...panel.querySelectorAll<HTMLElement>("a[href], button:not([disabled])")];
 
     const setOpen = (open: boolean) => {
-      root.hidden = !open;
+      window.clearTimeout(closeTimer);
       openButton.setAttribute("aria-expanded", String(open));
-      if (open) closeButton.focus({ preventScroll: true });
-      else openButton.focus({ preventScroll: true });
+      if (open) {
+        root.hidden = false;
+        requestAnimationFrame(() => root.setAttribute("data-open", ""));
+        closeButton.focus({ preventScroll: true });
+      } else {
+        root.removeAttribute("data-open");
+        closeTimer = window.setTimeout(() => {
+          root.hidden = true;
+        }, closeDelay);
+        openButton.focus({ preventScroll: true });
+      }
     };
 
     openButton.addEventListener("click", () => setOpen(Boolean(root.hidden)));
@@ -202,13 +214,102 @@ const palettes = [
     return "top";
   }
 
+  const navCluster = document.querySelector<HTMLElement>("[data-nav-cluster]");
+  let navTravelMarker: HTMLElement | undefined;
+  let navTravelAnimation: Animation | undefined;
+  let navArrivalAnimation: Animation | undefined;
+  let navLiveAnimation: Animation | undefined;
+
   function applyPlacement(placement: "top" | "left" | "right", persist: boolean) {
+    const previousPlacement = readPlacement(document.documentElement.dataset.navPlacement);
+    const lateralTransition =
+      (previousPlacement === "left" || previousPlacement === "right") &&
+      (placement === "left" || placement === "right");
+    const shouldAnimate =
+      persist &&
+      navCluster &&
+      previousPlacement !== placement &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const oldRect = shouldAnimate ? navCluster.getBoundingClientRect() : null;
+
+    navTravelAnimation?.cancel();
+    navArrivalAnimation?.cancel();
+    navLiveAnimation?.cancel();
+    navTravelMarker?.remove();
+    navTravelMarker = undefined;
+    if (oldRect && navCluster && !lateralTransition) {
+      navCluster.style.visibility = "hidden";
+      const marker = document.createElement("span");
+      marker.className = "nav-travel-marker";
+      marker.style.left = `${oldRect.left + oldRect.width / 2}px`;
+      marker.style.top = `${oldRect.top + oldRect.height / 2}px`;
+      navTravelMarker = marker;
+      document.body.appendChild(marker);
+    } else if (navCluster) {
+      navCluster.style.visibility = "";
+    }
+
     document.documentElement.dataset.navPlacement = placement;
     for (const option of placementOptions) {
       const selected = option.dataset.navPlacementOption === placement;
       option.setAttribute("aria-checked", String(selected));
       option.tabIndex = selected ? 0 : -1;
     }
+
+    const marker = navTravelMarker;
+    if (oldRect && navCluster && lateralTransition) {
+      requestAnimationFrame(() => {
+        const newRect = navCluster.getBoundingClientRect();
+        const offsetX = oldRect.left - newRect.left;
+        const offsetY = oldRect.top - newRect.top;
+        navLiveAnimation = navCluster.animate(
+          [
+            { transform: `translate(${offsetX}px, ${offsetY}px)` },
+            { transform: "translate(0, 0)" },
+          ],
+          {
+            duration: 620,
+            easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+          },
+        );
+      });
+    } else if (oldRect && navCluster && marker) {
+      requestAnimationFrame(() => {
+        const newRect = navCluster.getBoundingClientRect();
+        navTravelAnimation = marker.animate(
+          [
+            {
+              left: marker.style.left,
+              top: marker.style.top,
+            },
+            {
+              left: `${newRect.left + newRect.width / 2}px`,
+              top: `${newRect.top + newRect.height / 2}px`,
+            },
+          ],
+          {
+            duration: 620,
+            easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+          },
+        );
+        navTravelAnimation.addEventListener("finish", () => {
+          marker.remove();
+          navTravelMarker = undefined;
+          navCluster.style.visibility = "";
+          navArrivalAnimation = navCluster.animate(
+            [
+              { opacity: 0, transform: "scale(0.86)" },
+              { opacity: 1, transform: "scale(1)" },
+            ],
+            {
+              duration: 260,
+              easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+            },
+          );
+        });
+      });
+    }
+
     if (!persist) return;
     try {
       localStorage.setItem("nav-placement", placement);
