@@ -164,7 +164,7 @@ const palettes = [
       else openButton.focus({ preventScroll: true });
     };
 
-    openButton.addEventListener("click", () => setOpen(root.hidden));
+    openButton.addEventListener("click", () => setOpen(Boolean(root.hidden)));
 
     closeButton.addEventListener("click", () => setOpen(false));
 

@@ -8,10 +8,17 @@
     "binding": "ASSETS",
     "run_worker_first": ["/api/*"]
   },
-  // Secrets, not committed: RESEND_API_KEY, TURNSTILE_SECRET_KEY.
-  // Local values go in .dev.vars. Production values are Worker secrets.
+  // The binding can only deliver to this inbox, whatever the code asks for.
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "destination_address": "roymoli15@gmail.com"
+    }
+  ],
+  // Optional secret: TURNSTILE_SECRET_KEY (only if turnstileSiteKey is set).
+  // Local value goes in .dev.vars. Production value is a Worker secret.
   "vars": {
     "CONTACT_TO": "roymoli15@gmail.com",
-    "CONTACT_FROM": "Portfolio <contact@roypm.es>"
+    "CONTACT_FROM": "contact@roypm.es"
   }
 }

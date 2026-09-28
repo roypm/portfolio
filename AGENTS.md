@@ -21,7 +21,9 @@ Visitor-facing copy may exist in Spanish and Catalan only inside the locale cont
 - `main` is deployed. Cloudflare Workers publishes this branch. Do not commit directly to it.
 - `develop` is the working branch. Commit there.
 - Ship with a pull request from `develop` into `main`.
-- CI runs on that pull request and must pass before merge.
+- CI runs on that pull request and must pass before merge. `main` is protected, so a failing check blocks the merge.
+- CI, in order: `pnpm install --frozen-lockfile`, `pnpm check`, `pnpm test`, `pnpm build`, and `pnpm exec wrangler deploy --dry-run`.
+- `pnpm check` generates the Worker types and then type-checks the whole project. `pnpm test` runs the contact form suite in the Workers runtime. The dry run validates the deploy without publishing.
 
 # Publishing
 

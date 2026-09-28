@@ -1,10 +1,11 @@
 import { parseContactBody, type ContactMessage } from "../src/contact";
 
-interface Env {
+export interface Env {
+  EMAIL: { send(message: EmailMessageBuilder): Promise<EmailSendResult> };
   CONTACT_TO: string;
   CONTACT_FROM: string;
-  RESEND_API_KEY: string;
-  TURNSTILE_SECRET_KEY: string;
+  /** Optional. When set, every submission must pass Turnstile. */
+  TURNSTILE_SECRET_KEY?: string;
 }
 
 export default {
@@ -31,14 +32,17 @@ export default {
     const parsed = parseContactBody(body);
     if (!parsed.ok) return json({ ok: false }, 400);
 
-    if (!env.TURNSTILE_SECRET_KEY || !env.RESEND_API_KEY || !env.CONTACT_TO || !env.CONTACT_FROM) {
+    if (!env.EMAIL || !env.CONTACT_TO || !env.CONTACT_FROM) {
       console.error("Contact mail is not configured");
       return json({ ok: false }, 500);
     }
 
-    const ip = request.headers.get("cf-connecting-ip");
-    const human = await verifyTurnstile(parsed.value.turnstileToken, env.TURNSTILE_SECRET_KEY, ip);
-    if (!human) return json({ ok: false }, 400);
+    if (env.TURNSTILE_SECRET_KEY) {
+      if (!parsed.value.turnstileToken) return json({ ok: false }, 400);
+      const ip = request.headers.get("cf-connecting-ip");
+      const human = await verifyTurnstile(parsed.value.turnstileToken, env.TURNSTILE_SECRET_KEY, ip);
+      if (!human) return json({ ok: false }, 400);
+    }
 
     const sent = await sendMail(env, parsed.value);
     if (!sent) return json({ ok: false }, 502);
@@ -66,25 +70,20 @@ async function verifyTurnstile(token: string, secret: string, ip: string | null)
 }
 
 async function sendMail(env: Env, message: ContactMessage): Promise<boolean> {
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${env.RESEND_API_KEY}`,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      from: env.CONTACT_FROM,
-      to: [env.CONTACT_TO],
-      reply_to: message.email,
+  try {
+    await env.EMAIL.send({
+      from: { email: env.CONTACT_FROM, name: "Portfolio" },
+      to: env.CONTACT_TO,
+      replyTo: message.email,
       subject: `Portfolio: ${message.name}`.slice(0, 200),
       text: `${message.name}\n${message.email}\n\n${message.message}`,
-    }),
-  });
-  if (!response.ok) {
-    console.error("Resend rejected the contact message", response.status);
+    });
+    return true;
+  } catch (error) {
+    const code = (error as { code?: string }).code ?? "unknown";
+    console.error("Email Service rejected the contact message", code);
     return false;
   }
-  return true;
 }
 
 function json(body: { ok: boolean }, status: number): Response {

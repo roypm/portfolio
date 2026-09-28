@@ -55,7 +55,14 @@ export function parseContactBody(body: unknown): ContactParse {
   if (company) return { ok: false, reason: "honeypot" };
 
   const visible = visibleContact(record.name, record.email, record.message);
-  const turnstileToken = singleLine(record.turnstileToken, TOKEN_MAX);
-  if (!visible || !turnstileToken) return { ok: false, reason: "invalid" };
+  if (!visible) return { ok: false, reason: "invalid" };
+
+  // Empty when Turnstile is off. When the Worker has a secret, it rejects a blank token.
+  const turnstileToken =
+    record.turnstileToken == null || record.turnstileToken === ""
+      ? ""
+      : singleLine(record.turnstileToken, TOKEN_MAX);
+  if (turnstileToken == null) return { ok: false, reason: "invalid" };
+
   return { ok: true, value: { ...visible, turnstileToken } };
 }
