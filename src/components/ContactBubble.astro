@@ -14,8 +14,8 @@ const t = useTranslations(locale);
 <a
   data-contact
   href="#contact"
-  class="fx-glass fixed right-5 bottom-5 z-20 inline-flex size-14 items-center justify-center rounded-full border border-pacific-cyan-500 bg-pacific-cyan-500 text-tea-green-900 shadow-lg transition-transform duration-300 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pacific-cyan-500 md:h-12 md:w-auto md:gap-2 md:px-5"
+  class="fixed right-5 bottom-5 z-20 inline-flex size-14 items-center justify-center rounded-full border transition-transform duration-300 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-pacific-cyan-500 md:h-12 md:w-auto md:gap-2.5 md:px-6"
 >
-  <Mail size={20} aria-hidden="true" />
-  <span class="sr-only md:not-sr-only">{t("cta")}</span>
+  <Mail size={18} aria-hidden="true" />
+  <span class="sr-only font-mono text-[0.6875rem] tracking-[0.2em] uppercase md:not-sr-only">{t("cta")}</span>
 </a>

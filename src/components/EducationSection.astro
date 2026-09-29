@@ -1,0 +1,150 @@
+---
+import { getCollection, render } from "astro:content";
+import { ExternalLink as ExternalLinkIcon, FileText } from "@lucide/astro";
+import ExternalLink from "./ExternalLink.astro";
+import SectionHead from "./SectionHead.astro";
+import { localizedEntries } from "../i18n/content";
+import type { Locale } from "../i18n/ui";
+import { useTranslations } from "../i18n/utils";
+
+interface Props {
+  locale: Locale;
+  index: string;
+}
+
+const { locale, index } = Astro.props;
+const t = useTranslations(locale);
+
+const education = localizedEntries(await getCollection("education"), locale)
+  .filter((entry) => !entry.data.hidden)
+  .sort((a, b) => {
+    const byDate = b.data.start.valueOf() - a.data.start.valueOf();
+    if (byDate !== 0) return byDate;
+    return a.id.localeCompare(b.id);
+  });
+const degrees = education.filter((entry) => entry.data.kind === "degree");
+const courses = education.filter((entry) => entry.data.kind === "course");
+
+const bodies = new Map(
+  await Promise.all(
+    degrees.map(async (entry) => [entry.id, (await render(entry)).Content] as const),
+  ),
+);
+
+const dateFormat = new Intl.DateTimeFormat(locale, { year: "numeric", month: "short" });
+
+function dates(start: Date, end: Date | undefined, kind: "degree" | "course") {
+  const startLabel = dateFormat.format(start);
+  if (end) return `${startLabel} – ${dateFormat.format(end)}`;
+  if (kind === "course") return startLabel;
+  return `${startLabel} – ${t("present")}`;
+}
+
+const placeholder = "italic text-dark-slate-grey-600";
+const degreePlaceholders = [0, 1];
+const coursePlaceholders = [0, 1];
+---
+
+<section id="education" class="mt-32 scroll-mt-28 md:mt-48">
+  <SectionHead index={index} title={t("nav.education")} />
+
+  <div class="relative mt-14 ml-1">
+    <div
+      data-timeline-line
+      data-reveal
+      class="fx-timeline-rail absolute top-2 bottom-2 left-0 w-px"
+      aria-hidden="true"
+    >
+    </div>
+    <ol>
+      {
+        degrees.length > 0
+          ? degrees.map((entry, position) => {
+              const Body = bodies.get(entry.id);
+              return (
+                <li
+                  class="fx-timeline-entry fx-reveal relative pb-14 pl-10 last:pb-0 md:pl-14"
+                  data-reveal
+                  style={`--reveal-delay: ${Math.min(320, position * 90)}ms`}
+                >
+                  <span
+                    class="fx-timeline-dot absolute top-2 left-0 size-2.5 -translate-x-1/2 rounded-full bg-pacific-cyan-500"
+                    aria-hidden="true"
+                  />
+                  <p class="fx-timeline-dates">{dates(entry.data.start, entry.data.end, "degree")}</p>
+                  <h3 class="t-title mt-3 text-charcoal-blue-300">{entry.data.title}</h3>
+                  <p class="t-subtitle mt-1 text-pacific-cyan-500">{entry.data.place}</p>
+                  {Body && (
+                    <div class="mt-4 max-w-prose space-y-2 text-pretty">
+                      <Body />
+                    </div>
+                  )}
+                </li>
+              );
+            })
+          : degreePlaceholders.map(() => (
+              <li class="relative pb-14 pl-10 last:pb-0 md:pl-14">
+                <span
+                  class="absolute top-2 left-0 size-2.5 -translate-x-1/2 rounded-full bg-pacific-cyan-500"
+                  aria-hidden="true"
+                />
+                <p class:list={["fx-timeline-dates", placeholder]}>{t("placeholder.education.dates")}</p>
+                <h3 class:list={["t-title mt-3", placeholder]}>{t("placeholder.education.title")}</h3>
+                <p class:list={["t-subtitle mt-1", placeholder]}>{t("placeholder.education.place")}</p>
+              </li>
+            ))
+      }
+    </ol>
+  </div>
+
+  <p class="t-eyebrow mt-20">{t("education.courses")}</p>
+  <ul class="mt-8 grid grid-cols-1 items-start gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-4">
+    {
+      courses.length > 0
+        ? courses.map((entry, position) => (
+            <li
+              class="fx-course fx-reveal flex h-full flex-col"
+              data-reveal
+              style={`--reveal-delay: ${Math.min(320, position * 70)}ms`}
+            >
+              <h4 class="t-subtitle text-charcoal-blue-300">{entry.data.title}</h4>
+              <p class="mt-2 text-sm">{entry.data.place}</p>
+              <p class="fx-timeline-dates mt-1">{dates(entry.data.start, entry.data.end, "course")}</p>
+              {(entry.data.certificate || entry.data.url) && (
+                <div class="mt-4 flex items-center gap-4">
+                  {entry.data.certificate && (
+                    <ExternalLink
+                      class="fx-link-underline inline-flex items-center gap-1.5 text-sm text-pacific-cyan-500"
+                      href={entry.data.certificate}
+                    >
+                      <FileText size={15} aria-hidden="true" />
+                      {t("education.certificate")}
+                    </ExternalLink>
+                  )}
+                  {entry.data.url && (
+                    <ExternalLink
+                      class="text-pacific-cyan-500 transition-transform duration-300 hover:-translate-y-0.5"
+                      href={entry.data.url}
+                      aria-label={t("education.course")}
+                    >
+                      <ExternalLinkIcon size={15} aria-hidden="true" />
+                    </ExternalLink>
+                  )}
+                </div>
+              )}
+            </li>
+          ))
+        : coursePlaceholders.map(() => (
+            <li class="fx-course flex h-full flex-col">
+              <h4 class:list={["t-subtitle", placeholder]}>{t("placeholder.course.title")}</h4>
+              <p class:list={["mt-2 text-sm", placeholder]}>{t("placeholder.course.place")}</p>
+              <p class:list={["fx-timeline-dates mt-1", placeholder]}>{t("placeholder.course.dates")}</p>
+              <p class:list={["mt-4 inline-flex items-center gap-1.5 text-sm", placeholder]}>
+                <FileText size={15} aria-hidden="true" />
+                {t("placeholder.course.certificate")}
+              </p>
+            </li>
+          ))
+    }
+  </ul>
+</section>
