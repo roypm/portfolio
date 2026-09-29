@@ -77,7 +77,7 @@ export const ui = {
     "placeholder.course.place": "Quién lo imparte",
     "placeholder.course.dates": "Fecha",
     "placeholder.course.certificate": "Certificado",
-    "scroll.sample": "Espacio reservado para una animación al hacer scroll.",
+    "scroll.scene": "Formas que se mueven al hacer scroll.",
   },
   en: {
     "nav.label": "Sections",
@@ -139,7 +139,7 @@ export const ui = {
     "placeholder.course.place": "Issuer",
     "placeholder.course.dates": "Date",
     "placeholder.course.certificate": "Certificate",
-    "scroll.sample": "Space reserved for a scroll animation.",
+    "scroll.scene": "Shapes that move on scroll.",
   },
   ca: {
     "nav.label": "Seccions",
@@ -201,7 +201,7 @@ export const ui = {
     "placeholder.course.place": "Qui l'imparteix",
     "placeholder.course.dates": "Data",
     "placeholder.course.certificate": "Certificat",
-    "scroll.sample": "Espai reservat per a una animació en fer scroll.",
+    "scroll.scene": "Formes que es mouen en fer scroll.",
   },
 } as const;
 
