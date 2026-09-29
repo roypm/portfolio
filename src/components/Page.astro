@@ -10,6 +10,7 @@ import { defaultLocale, type Locale } from "../i18n/ui";
 import { useTranslations } from "../i18n/utils";
 import Footer from "./Footer.astro";
 import Nav from "./Nav.astro";
+import ScrollScene from "./ScrollScene.astro";
 import "../styles/global.css";
 
 interface Props {
@@ -337,13 +338,7 @@ const coursePlaceholders = [0, 1];
 
       <ContactSection locale={locale} />
     </main>
-    <section aria-label={t("scroll.sample")} class="relative h-[300vh]">
-      <div class="sticky top-0 flex h-screen items-center justify-center px-4">
-        <div class="fx-glass flex aspect-video w-full max-w-4xl items-center justify-center rounded-2xl border border-dashed border-dark-slate-grey-800 bg-muted-teal-800 p-6">
-          <p class="text-center italic text-dark-slate-grey-600">{t("scroll.sample")}</p>
-        </div>
-      </div>
-    </section>
+    <ScrollScene label={t("scroll.scene")} />
     <Footer locale={locale} />
     <ContactBubble locale={locale} />
     <script is:inline>

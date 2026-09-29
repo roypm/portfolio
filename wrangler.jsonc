@@ -20,5 +20,18 @@
   "vars": {
     "CONTACT_TO": "roymoli15@gmail.com",
     "CONTACT_FROM": "contact@roypm.es"
+  },
+  // wrangler preview does not inherit the bindings above.
+  "previews": {
+    "vars": {
+      "CONTACT_TO": "roymoli15@gmail.com",
+      "CONTACT_FROM": "contact@roypm.es"
+    },
+    "send_email": [
+      {
+        "name": "EMAIL",
+        "destination_address": "roymoli15@gmail.com"
+      }
+    ]
   }
 }

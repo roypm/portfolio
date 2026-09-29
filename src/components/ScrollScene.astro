@@ -1,0 +1,270 @@
+---
+interface Props {
+  label: string;
+}
+
+const { label } = Astro.props;
+
+const blobs = [
+  {
+    x: "24%",
+    y: "42%",
+    size: "62%",
+    opacity: "0.34",
+    color: "var(--color-pacific-cyan-500)",
+    path: "M38,96 C26,48 74,18 122,28 C172,38 190,82 176,124 C160,168 108,188 64,170 C18,150 12,132 38,96 Z",
+  },
+  {
+    x: "74%",
+    y: "36%",
+    size: "54%",
+    opacity: "0.3",
+    color: "var(--color-charcoal-blue-500)",
+    path: "M108,16 C154,22 186,66 178,116 C170,166 128,192 82,178 C32,162 12,122 26,74 C40,28 64,12 108,16 Z",
+  },
+  {
+    x: "48%",
+    y: "64%",
+    size: "48%",
+    opacity: "0.38",
+    color: "var(--color-dark-slate-grey-600)",
+    path: "M76,38 C122,14 172,38 182,88 C192,140 154,180 104,188 C50,196 14,156 22,102 C30,52 40,56 76,38 Z",
+  },
+  {
+    x: "16%",
+    y: "70%",
+    size: "40%",
+    opacity: "0.32",
+    color: "var(--color-pacific-cyan-600)",
+    path: "M94,26 C142,12 180,54 174,104 C168,154 122,186 74,170 C24,152 6,106 28,62 C46,26 58,36 94,26 Z",
+  },
+  {
+    x: "82%",
+    y: "68%",
+    size: "36%",
+    opacity: "0.36",
+    color: "var(--color-charcoal-blue-700)",
+    path: "M100,24 C148,20 182,58 176,106 C170,156 134,184 92,176 C44,166 18,128 28,80 C38,36 56,28 100,24 Z",
+  },
+];
+
+const rings = [
+  { x: "36%", y: "48%", size: "36%", opacity: "0.9", color: "var(--color-pacific-cyan-500)" },
+  { x: "64%", y: "52%", size: "28%", opacity: "0.85", color: "var(--color-charcoal-blue-500)" },
+];
+
+const circles = [
+  { x: "28%", y: "34%", size: "16%", opacity: "0.92", color: "var(--color-pacific-cyan-700)" },
+  { x: "70%", y: "38%", size: "13%", opacity: "0.9", color: "var(--color-dark-slate-grey-600)" },
+  { x: "50%", y: "62%", size: "11%", opacity: "0.95", color: "var(--color-charcoal-blue-500)" },
+];
+
+const dots = [
+  { x: "42%", y: "30%", size: "7%", color: "var(--color-pacific-cyan-500)" },
+  { x: "60%", y: "34%", size: "6%", color: "var(--color-charcoal-blue-500)" },
+  { x: "46%", y: "54%", size: "5.5%", color: "var(--color-pacific-cyan-600)" },
+  { x: "66%", y: "62%", size: "5%", color: "var(--color-dark-slate-grey-600)" },
+];
+
+const pieceStyle = (piece: { x: string; y: string; size: string; opacity?: string; color: string }) =>
+  `--piece-x: ${piece.x}; --piece-y: ${piece.y}; --piece-size: ${piece.size}; --piece-color: ${piece.color}; --piece-opacity: ${piece.opacity ?? "1"};`;
+---
+
+<section data-scroll-scene class="relative h-[300vh]" aria-label={label}>
+  <div class="sticky top-0 flex h-screen items-center justify-center px-4">
+    <div
+      data-scroll-frame
+      class="fx-glass relative aspect-video w-full max-w-4xl overflow-hidden rounded-2xl border border-dark-slate-grey-800 bg-muted-teal-800"
+    >
+      {
+        blobs.map((blob) => (
+          <div data-scroll-piece data-scroll-blob style={pieceStyle(blob)}>
+            <svg viewBox="0 0 200 200" aria-hidden="true">
+              <path fill="currentColor" d={blob.path} />
+            </svg>
+          </div>
+        ))
+      }
+      {
+        rings.map((ring) => (
+          <div data-scroll-piece data-scroll-ring style={pieceStyle(ring)}>
+            <svg viewBox="0 0 200 200" aria-hidden="true">
+              <circle cx="100" cy="100" r="78" fill="none" stroke="currentColor" stroke-width="14" />
+            </svg>
+          </div>
+        ))
+      }
+      {
+        circles.map((circle) => (
+          <div data-scroll-piece data-scroll-circle style={pieceStyle(circle)}>
+            <svg viewBox="0 0 200 200" aria-hidden="true">
+              <circle cx="100" cy="100" r="100" fill="currentColor" />
+            </svg>
+          </div>
+        ))
+      }
+      {
+        dots.map((dot) => (
+          <div data-scroll-piece data-scroll-dot style={pieceStyle(dot)}>
+            <svg viewBox="0 0 200 200" aria-hidden="true">
+              <circle cx="100" cy="100" r="100" fill="currentColor" />
+            </svg>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  import { createTimeline, onScroll } from "animejs";
+
+  const scene = document.querySelector<HTMLElement>("[data-scroll-scene]");
+  if (scene && document.documentElement.classList.contains("fx-motion")) {
+    const blobs = [...scene.querySelectorAll<HTMLElement>("[data-scroll-blob]")];
+    const rings = [...scene.querySelectorAll<HTMLElement>("[data-scroll-ring]")];
+    const circles = [...scene.querySelectorAll<HTMLElement>("[data-scroll-circle]")];
+    const dots = [...scene.querySelectorAll<HTMLElement>("[data-scroll-dot]")];
+
+    const blobDrift = [
+      { x: 48, y: -24, scale: 1.08 },
+      { x: -40, y: 28, scale: 1.12 },
+      { x: 24, y: 36, scale: 0.94 },
+      { x: -52, y: -18, scale: 1.06 },
+      { x: 32, y: 22, scale: 1.1 },
+    ];
+
+    const dotDrift = [
+      { x: 22, y: -14 },
+      { x: -18, y: 16 },
+      { x: 14, y: 20 },
+      { x: -26, y: -12 },
+    ];
+
+    const timeline = createTimeline({
+      defaults: { ease: "linear" },
+      autoplay: onScroll({
+        target: scene,
+        enter: { target: "top", container: "bottom" },
+        leave: { target: "bottom", container: "top" },
+        sync: true,
+      }),
+    });
+
+    blobs.forEach((blob, index) => {
+      const drift = blobDrift[index];
+      if (!drift) return;
+      timeline.add(
+        blob,
+        {
+          x: drift.x,
+          y: drift.y,
+          scale: drift.scale,
+          duration: 1200,
+          ease: "inOutSine",
+        },
+        0,
+      );
+    });
+
+    const ringEase = { duration: 1200, ease: "inOutQuad" } as const;
+    if (rings[0]) {
+      timeline.add(
+        rings[0],
+        {
+          ...ringEase,
+          keyframes: {
+            "0%": { x: 0, y: 0, scale: 0.85, rotate: 0 },
+            "45%": { x: 120, y: -36, scale: 1.28, rotate: 150 },
+            "100%": { x: 28, y: 44, scale: 0.92, rotate: 280 },
+          },
+        },
+        0,
+      );
+    }
+    if (rings[1]) {
+      timeline.add(
+        rings[1],
+        {
+          ...ringEase,
+          keyframes: {
+            "0%": { x: 0, y: 0, scale: 1.05, rotate: 0 },
+            "50%": { x: -110, y: 40, scale: 0.72, rotate: -170 },
+            "100%": { x: -24, y: -32, scale: 1.18, rotate: -320 },
+          },
+        },
+        0,
+      );
+    }
+
+    const circleEase = { duration: 1200, ease: "inOutQuad" } as const;
+    if (circles[0]) {
+      timeline.add(
+        circles[0],
+        {
+          ...circleEase,
+          keyframes: {
+            "0%": { x: -20, y: 10, scale: 0.8, rotate: 0 },
+            "55%": { x: 100, y: -40, scale: 1.2, rotate: 80 },
+            "100%": { x: 36, y: 18, scale: 0.9, rotate: 160 },
+          },
+        },
+        0,
+      );
+    }
+    if (circles[1]) {
+      timeline.add(
+        circles[1],
+        {
+          ...circleEase,
+          keyframes: {
+            "0%": { x: 18, y: -28, scale: 1, rotate: 0 },
+            "50%": { x: -80, y: 48, scale: 0.75, rotate: -90 },
+            "100%": { x: -16, y: 10, scale: 1.15, rotate: -200 },
+          },
+        },
+        0,
+      );
+    }
+    if (circles[2]) {
+      timeline.add(
+        circles[2],
+        {
+          ...circleEase,
+          keyframes: {
+            "0%": { x: 0, y: 28, scale: 0.7, rotate: 0 },
+            "40%": { x: 60, y: -48, scale: 1.3, rotate: 120 },
+            "100%": { x: -44, y: -8, scale: 0.85, rotate: 240 },
+          },
+        },
+        0,
+      );
+    }
+
+    dots.forEach((dot, index) => {
+      const drift = dotDrift[index];
+      if (!drift) return;
+      const start = 60 + index * 110;
+      timeline.add(
+        dot,
+        {
+          scale: [0, 1],
+          opacity: [0, 1],
+          duration: 240,
+          ease: "outExpo",
+        },
+        start,
+      );
+      timeline.add(
+        dot,
+        {
+          x: drift.x,
+          y: drift.y,
+          duration: 800,
+          ease: "inOutSine",
+        },
+        start + 80,
+      );
+    });
+  }
+</script>
