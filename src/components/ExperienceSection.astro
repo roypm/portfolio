@@ -1,0 +1,86 @@
+---
+import { getCollection, render } from "astro:content";
+import SectionHead from "./SectionHead.astro";
+import { localizedEntries } from "../i18n/content";
+import type { Locale } from "../i18n/ui";
+import { useTranslations } from "../i18n/utils";
+
+interface Props {
+  locale: Locale;
+  index: string;
+}
+
+const { locale, index } = Astro.props;
+const t = useTranslations(locale);
+
+const experience = localizedEntries(await getCollection("experience"), locale).sort(
+  (a, b) => b.data.start.valueOf() - a.data.start.valueOf(),
+);
+
+const bodies = new Map(
+  await Promise.all(
+    experience.map(async (entry) => [entry.id, (await render(entry)).Content] as const),
+  ),
+);
+
+const dateFormat = new Intl.DateTimeFormat(locale, { year: "numeric", month: "short" });
+const placeholder = "italic text-dark-slate-grey-600";
+const experiencePlaceholders = [0, 1, 2];
+---
+
+<section id="experience" class="mt-32 scroll-mt-28 md:mt-48">
+  <SectionHead index={index} title={t("nav.experience")} />
+
+  <div class="relative mt-14 ml-1">
+    <div
+      data-timeline-line
+      data-reveal
+      class="fx-timeline-rail absolute top-2 bottom-2 left-0 w-px"
+      aria-hidden="true"
+    >
+    </div>
+    <ol>
+      {
+        experience.length > 0
+          ? experience.map((entry, position) => {
+              const Body = bodies.get(entry.id);
+              const dates = entry.data.end
+                ? `${dateFormat.format(entry.data.start)} – ${dateFormat.format(entry.data.end)}`
+                : `${dateFormat.format(entry.data.start)} – ${t("present")}`;
+              return (
+                <li
+                  class="fx-timeline-entry fx-reveal relative pb-14 pl-10 last:pb-0 md:pl-14"
+                  data-reveal
+                  style={`--reveal-delay: ${Math.min(320, position * 90)}ms`}
+                >
+                  <span
+                    class="fx-timeline-dot absolute top-2 left-0 size-2.5 -translate-x-1/2 rounded-full bg-pacific-cyan-500"
+                    aria-hidden="true"
+                  />
+                  <p class="fx-timeline-dates">{dates}</p>
+                  <h3 class="t-title mt-3 text-charcoal-blue-300">{entry.data.role}</h3>
+                  <p class="t-subtitle mt-1 text-pacific-cyan-500">{entry.data.place}</p>
+                  {Body && (
+                    <div class="mt-4 max-w-prose space-y-2 text-pretty">
+                      <Body />
+                    </div>
+                  )}
+                </li>
+              );
+            })
+          : experiencePlaceholders.map(() => (
+              <li class="relative pb-14 pl-10 last:pb-0 md:pl-14">
+                <span
+                  class="absolute top-2 left-0 size-2.5 -translate-x-1/2 rounded-full bg-pacific-cyan-500"
+                  aria-hidden="true"
+                />
+                <p class:list={["fx-timeline-dates", placeholder]}>{t("placeholder.experience.dates")}</p>
+                <h3 class:list={["t-title mt-3", placeholder]}>{t("placeholder.experience.role")}</h3>
+                <p class:list={["t-subtitle mt-1", placeholder]}>{t("placeholder.experience.place")}</p>
+                <p class:list={["mt-4", placeholder]}>{t("placeholder.experience.body")}</p>
+              </li>
+            ))
+      }
+    </ol>
+  </div>
+</section>

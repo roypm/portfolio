@@ -13,13 +13,13 @@ const t = useTranslations(locale);
 const year = new Date().getFullYear();
 ---
 
-<footer class="mx-auto max-w-6xl px-4 pt-10 pb-24 text-charcoal-blue-500 lg:pb-8">
-  <div class="fx-section-line mb-6" aria-hidden="true"></div>
-  <div class="flex items-center justify-center gap-x-3 pt-2 text-center">
-    <p>{t("footer.rights").replace("{year}", String(year))}</p>
-    <p>
+<footer class="mx-auto max-w-6xl px-5 pt-12 pb-28 sm:px-8 lg:pb-12">
+  <div class="fx-section-line mb-8" aria-hidden="true"></div>
+  <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center">
+    <p class="t-eyebrow">{t("footer.rights").replace("{year}", String(year))}</p>
+    <p class="t-eyebrow">
       {t("footer.createdBy")}{" "}
-      <ExternalLink class="text-pacific-cyan-500" href={authorUrl}>{authorName}</ExternalLink>
+      <ExternalLink class="fx-link-underline text-pacific-cyan-500" href={authorUrl}>{authorName}</ExternalLink>
     </p>
   </div>
 </footer>

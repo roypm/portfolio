@@ -1,0 +1,70 @@
+---
+import { Image } from "astro:assets";
+import { getCollection, render } from "astro:content";
+import { defaultLocale, type Locale } from "../i18n/ui";
+import { useTranslations } from "../i18n/utils";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const homes = await getCollection("home");
+const home = homes.find((entry) => entry.id === locale) ?? homes.find((entry) => entry.id === defaultLocale);
+const Bio = home ? (await render(home)).Content : null;
+
+const name = home?.data.name ?? "";
+const role = home?.data.role ?? "";
+const sentence = home?.data.sentence ?? "";
+const focus = home?.data.focus ?? "";
+const hasBio = Boolean(home?.body?.trim());
+const placeholder = "italic text-dark-slate-grey-600";
+---
+
+<div class="grid items-start gap-x-16 gap-y-14 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+  <section id="intro" class="scroll-mt-28 fx-reveal" data-reveal style="--reveal-delay: 60ms">
+    <div class="flex items-center gap-4">
+      {
+        home?.data.photo ? (
+          <Image src={home.data.photo} alt="" class="size-14 rounded-full object-cover" />
+        ) : (
+          <div class="size-14 rounded-full bg-muted-teal-800" aria-hidden="true"></div>
+        )
+      }
+      <p class="t-eyebrow">
+        <span class="fx-timeline-marker" aria-hidden="true"></span>
+        {role || t("placeholder.role")}
+      </p>
+    </div>
+
+    <h1 class:list={["fx-hero-title t-display mt-8", !name && placeholder]}>
+      {name || t("placeholder.name")}
+    </h1>
+
+    <p class:list={["t-lead mt-8 max-w-lg", !sentence && placeholder]}>
+      {sentence || t("placeholder.sentence")}
+    </p>
+  </section>
+
+  <div class="flex flex-col gap-12 md:pt-28">
+    <section id="bio" class="scroll-mt-28 fx-reveal" data-reveal style="--reveal-delay: 160ms">
+      <p class="t-eyebrow">{t("nav.bio")}</p>
+      {
+        hasBio && Bio ? (
+          <div class="mt-5 max-w-prose space-y-4 text-pretty"><Bio /></div>
+        ) : (
+          <p class:list={["mt-5", placeholder]}>{t("placeholder.bio")}</p>
+        )
+      }
+    </section>
+
+    <section id="focus" class="scroll-mt-28 fx-reveal" data-reveal style="--reveal-delay: 240ms">
+      <p class="t-eyebrow">{t("nav.focus")}</p>
+      <p class:list={["t-subtitle mt-5 max-w-prose text-charcoal-blue-300", !focus && placeholder]}>
+        {focus || t("placeholder.focus")}
+      </p>
+    </section>
+  </div>
+</div>

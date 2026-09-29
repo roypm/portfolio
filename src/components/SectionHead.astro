@@ -1,0 +1,20 @@
+---
+interface Props {
+  index: string;
+  title: string;
+  note?: string;
+}
+
+const { index, title, note } = Astro.props;
+---
+
+<header class="section-head fx-reveal" data-reveal>
+  <div class="fx-section-line" aria-hidden="true"></div>
+  <div class="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-3">
+    <h2 class="t-section">
+      <span class="t-mono mr-4 align-super text-pacific-cyan-500" aria-hidden="true">{index}</span>
+      {title}
+    </h2>
+    {note && <p class="t-eyebrow">{note}</p>}
+  </div>
+</header>
