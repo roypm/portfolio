@@ -1,16 +1,17 @@
 ---
-import { Image } from "astro:assets";
-import { getCollection, render } from "astro:content";
-import { ExternalLink as ExternalLinkIcon, FileText, Pin } from "@lucide/astro";
+import { Font } from "astro:assets";
+import { getCollection } from "astro:content";
 import ContactBubble from "./ContactBubble.astro";
 import ContactSection from "./ContactSection.astro";
-import ExternalLink from "./ExternalLink.astro";
-import { localizedEntries } from "../i18n/content";
+import EducationSection from "./EducationSection.astro";
+import ExperienceSection from "./ExperienceSection.astro";
+import Footer from "./Footer.astro";
+import HeroSection from "./HeroSection.astro";
+import Nav from "./Nav.astro";
+import ProjectsSection from "./ProjectsSection.astro";
+import ScrollScene from "./ScrollScene.astro";
 import { defaultLocale, type Locale } from "../i18n/ui";
 import { useTranslations } from "../i18n/utils";
-import Footer from "./Footer.astro";
-import Nav from "./Nav.astro";
-import ScrollScene from "./ScrollScene.astro";
 import "../styles/global.css";
 
 interface Props {
@@ -22,56 +23,9 @@ const t = useTranslations(locale);
 
 const homes = await getCollection("home");
 const home = homes.find((entry) => entry.id === locale) ?? homes.find((entry) => entry.id === defaultLocale);
-const Bio = home ? (await render(home)).Content : null;
-
-const projects = localizedEntries(await getCollection("projects"), locale).sort(
-  (a, b) => a.data.order - b.data.order,
-);
-
-const experience = localizedEntries(await getCollection("experience"), locale).sort(
-  (a, b) => b.data.start.valueOf() - a.data.start.valueOf(),
-);
-
-const experienceBodies = new Map(
-  await Promise.all(
-    experience.map(async (entry) => [entry.id, (await render(entry)).Content] as const),
-  ),
-);
-
-const education = localizedEntries(await getCollection("education"), locale)
-  .filter((entry) => !entry.data.hidden)
-  .sort((a, b) => {
-    const byDate = b.data.start.valueOf() - a.data.start.valueOf();
-    if (byDate !== 0) return byDate;
-    return a.id.localeCompare(b.id);
-  });
-const degrees = education.filter((entry) => entry.data.kind === "degree");
-const courses = education.filter((entry) => entry.data.kind === "course");
-
-const educationBodies = new Map(
-  await Promise.all(
-    education.map(async (entry) => [entry.id, (await render(entry)).Content] as const),
-  ),
-);
-
-const dateFormat = new Intl.DateTimeFormat(locale, { year: "numeric", month: "short" });
-
-function educationDates(start: Date, end: Date | undefined, kind: "degree" | "course") {
-  const startLabel = dateFormat.format(start);
-  if (end) return `${startLabel} – ${dateFormat.format(end)}`;
-  if (kind === "course") return startLabel;
-  return `${startLabel} – ${t("present")}`;
-}
 const name = home?.data.name ?? "";
 const role = home?.data.role ?? "";
-const sentence = home?.data.sentence ?? "";
-const focus = home?.data.focus ?? "";
-const hasBio = Boolean(home?.body?.trim());
-const placeholder = "italic text-dark-slate-grey-600";
-const projectPlaceholders = [0, 1, 2, 3];
-const experiencePlaceholders = [0, 1, 2];
-const degreePlaceholders = [0, 1];
-const coursePlaceholders = [0, 1];
+const description = home?.data.sentence ?? "";
 ---
 
 <html lang={locale} class="bg-tea-green-900">
@@ -80,7 +34,10 @@ const coursePlaceholders = [0, 1];
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <title>{name || "Portfolio"}</title>
+    <title>{name ? `${name} — ${role}` : "Portfolio"}</title>
+    {description && <meta name="description" content={description} />}
+    <Font cssVariable="--font-geist" preload />
+    <Font cssVariable="--font-geist-mono" />
     <style is:inline>
       html.hash-pending body {
         visibility: hidden;
@@ -122,221 +79,12 @@ const coursePlaceholders = [0, 1];
   <body class="bg-tea-green-900 text-charcoal-blue-500">
     <div class="fx-glow-field" aria-hidden="true"></div>
     <Nav locale={locale} />
-    <main class="mx-auto max-w-6xl px-4 pt-24">
-      <div class="grid items-start gap-10 md:grid-cols-2">
-      <section id="intro" class="scroll-mt-24 fx-reveal" data-reveal style="--reveal-delay: 80ms">
-        {
-          home?.data.photo ? (
-            <Image src={home.data.photo} alt="" class="mb-4 size-24 rounded-full object-cover ring-4 ring-pacific-cyan-500/30 shadow-lg" />
-          ) : (
-            <div class="mb-4 size-24 rounded-full bg-muted-teal-800 ring-4 ring-pacific-cyan-500/30 shadow-lg" aria-hidden="true"></div>
-          )
-        }
-        <h1 class:list={["fx-hero-title text-4xl font-semibold tracking-tight text-charcoal-blue-300 md:text-5xl", !name && placeholder]}>{name || t("placeholder.name")}</h1>
-        <p class:list={["mt-2 text-lg text-pacific-cyan-500", !role && placeholder]}>{role || t("placeholder.role")}</p>
-        <p class:list={["mt-3 max-w-xl text-lg leading-relaxed", !sentence && placeholder]}>{sentence || t("placeholder.sentence")}</p>
-      </section>
-
-      <div class="flex flex-col gap-10">
-      <section id="bio" class="scroll-mt-24 fx-reveal" data-reveal style="--reveal-delay: 180ms">
-        <h2 class="text-xl text-charcoal-blue-300">{t("nav.bio")}</h2>
-        {
-          hasBio && Bio ? (
-            <div class="mt-4 space-y-4"><Bio /></div>
-          ) : (
-            <p class:list={["mt-4", placeholder]}>{t("placeholder.bio")}</p>
-          )
-        }
-      </section>
-
-      <section id="focus" class="scroll-mt-24 fx-reveal" data-reveal style="--reveal-delay: 260ms">
-        <h2 class="text-xl text-charcoal-blue-300">{t("nav.focus")}</h2>
-        <p class:list={["mt-4", !focus && placeholder]}>{focus || t("placeholder.focus")}</p>
-      </section>
-      </div>
-      </div>
-
-      <section id="projects" class="mt-16 scroll-mt-24">
-        <div class="fx-section-line mb-3" aria-hidden="true"></div>
-        <h2 class="text-xl text-charcoal-blue-300">{t("nav.projects")}</h2>
-        <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {
-            projects.length > 0
-              ? projects.map((project) => {
-                  const card =
-                    "fx-card fx-glass relative flex h-full flex-col overflow-hidden rounded-2xl border border-dark-slate-grey-800 bg-tea-green-800";
-                  const body = (
-                    <>
-                      {project.data.image && (
-                        <Image
-                          src={project.data.image}
-                          alt=""
-                          class="aspect-video w-full object-cover object-top"
-                        />
-                      )}
-                      {project.data.pinned && (
-                        <span class="absolute top-3 right-3 inline-flex size-8 items-center justify-center rounded-full bg-pacific-cyan-500 text-tea-green-900">
-                          <Pin size={16} aria-hidden="true" />
-                          <span class="sr-only">{t("project.pinned")}</span>
-                        </span>
-                      )}
-                      <div class="flex flex-1 flex-col p-4">
-                        <h3 class="text-lg text-charcoal-blue-300">{project.data.title}</h3>
-                        <p class="mt-1">{project.data.summary}</p>
-                        {project.data.stack.length > 0 && <p class="mt-3">{project.data.stack.join(", ")}</p>}
-                      </div>
-                    </>
-                  );
-                  return project.data.url ? (
-                    <a
-                      class={`${card} hover:border-pacific-cyan-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pacific-cyan-500`}
-                      href={project.data.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {body}
-                    </a>
-                  ) : (
-                    <article class={card}>{body}</article>
-                  );
-                })
-              : projectPlaceholders.map(() => (
-                  <article class="fx-card fx-glass flex h-full flex-col overflow-hidden rounded-2xl border border-dark-slate-grey-800 bg-tea-green-800">
-                    <div class="aspect-video w-full bg-muted-teal-800" aria-hidden="true"></div>
-                    <div class="flex flex-1 flex-col p-4">
-                      <h3 class:list={["text-lg", placeholder]}>{t("placeholder.project.title")}</h3>
-                      <p class:list={["mt-1", placeholder]}>{t("placeholder.project.summary")}</p>
-                      <p class:list={["mt-3", placeholder]}>{t("placeholder.project.stack")}</p>
-                      <p class:list={["mt-2", placeholder]}>{t("placeholder.project.url")}</p>
-                    </div>
-                  </article>
-                ))
-          }
-        </div>
-      </section>
-
-      <section id="experience" class="mt-16 scroll-mt-24">
-        <div class="fx-section-line mb-3" aria-hidden="true"></div>
-        <h2 class="text-xl text-charcoal-blue-300">{t("nav.experience")}</h2>
-        <div class="relative mt-8 ml-2">
-          <div data-timeline-line data-reveal class="absolute top-2 bottom-2 left-0 w-px bg-gradient-to-b from-pacific-cyan-500 via-pacific-cyan-700 to-transparent" aria-hidden="true"></div>
-          <ol>
-            {
-              experience.length > 0
-                ? experience.map((entry) => {
-                    const ExperienceBody = experienceBodies.get(entry.id);
-                    const dates = entry.data.end
-                      ? `${dateFormat.format(entry.data.start)} – ${dateFormat.format(entry.data.end)}`
-                      : `${dateFormat.format(entry.data.start)} – ${t("present")}`;
-                    return (
-                      <li class="fx-reveal relative pb-10 pl-8 last:pb-0" data-reveal style={`--reveal-delay: ${Math.min(400, experience.indexOf(entry) * 90)}ms`}>
-                        <span data-timeline-dot class="absolute top-1.5 left-0 size-3 -translate-x-1/2 rounded-full bg-pacific-cyan-500 ring-4 ring-tea-green-900" aria-hidden="true"></span>
-                        <h3 class="text-lg text-charcoal-blue-300">{entry.data.role}</h3>
-                        <p>{entry.data.place}</p>
-                        <p>{dates}</p>
-                        {ExperienceBody && (
-                          <div class="mt-2 space-y-2">
-                            <ExperienceBody />
-                          </div>
-                        )}
-                      </li>
-                    );
-                  })
-                : experiencePlaceholders.map(() => (
-                    <li class="relative pb-10 pl-8 last:pb-0">
-                      <span class="absolute top-1.5 left-0 size-3 -translate-x-1/2 rounded-full bg-pacific-cyan-500 ring-4 ring-tea-green-900" aria-hidden="true"></span>
-                      <h3 class:list={["text-lg", placeholder]}>{t("placeholder.experience.role")}</h3>
-                      <p class={placeholder}>{t("placeholder.experience.place")}</p>
-                      <p class={placeholder}>{t("placeholder.experience.dates")}</p>
-                      <p class:list={["mt-2", placeholder]}>{t("placeholder.experience.body")}</p>
-                    </li>
-                  ))
-            }
-          </ol>
-        </div>
-      </section>
-
-      <section id="education" class="mt-16 scroll-mt-24">
-        <div class="fx-section-line mb-3" aria-hidden="true"></div>
-        <h2 class="text-xl text-charcoal-blue-300">{t("nav.education")}</h2>
-        <div class="relative mt-8 ml-2">
-          <div data-timeline-line data-reveal class="absolute top-2 bottom-2 left-0 w-px bg-gradient-to-b from-pacific-cyan-500 via-pacific-cyan-700 to-transparent" aria-hidden="true"></div>
-          <ol>
-            {
-              degrees.length > 0
-                ? degrees.map((entry) => {
-                    const DegreeBody = educationBodies.get(entry.id);
-                    return (
-                      <li class="fx-reveal relative pb-10 pl-8 last:pb-0" data-reveal style={`--reveal-delay: ${Math.min(400, degrees.indexOf(entry) * 90)}ms`}>
-                        <span data-timeline-dot class="absolute top-1.5 left-0 size-3 -translate-x-1/2 rounded-full bg-pacific-cyan-500 ring-4 ring-tea-green-900" aria-hidden="true"></span>
-                        <h3 class="text-lg text-charcoal-blue-300">{entry.data.title}</h3>
-                        <p>{entry.data.place}</p>
-                        <p>{educationDates(entry.data.start, entry.data.end, "degree")}</p>
-                        {DegreeBody && (
-                          <div class="mt-2 space-y-2">
-                            <DegreeBody />
-                          </div>
-                        )}
-                      </li>
-                    );
-                  })
-                : degreePlaceholders.map(() => (
-                    <li class="relative pb-10 pl-8 last:pb-0">
-                      <span class="absolute top-1.5 left-0 size-3 -translate-x-1/2 rounded-full bg-pacific-cyan-500 ring-4 ring-tea-green-900" aria-hidden="true"></span>
-                      <h3 class:list={["text-lg", placeholder]}>{t("placeholder.education.title")}</h3>
-                      <p class={placeholder}>{t("placeholder.education.place")}</p>
-                      <p class={placeholder}>{t("placeholder.education.dates")}</p>
-                      <p class:list={["mt-2", placeholder]}>{t("placeholder.education.body")}</p>
-                    </li>
-                  ))
-            }
-          </ol>
-        </div>
-
-        <h3 class="mt-10 text-lg text-charcoal-blue-300">{t("education.courses")}</h3>
-        <ul class="mt-4 grid grid-cols-1 items-start gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {
-            courses.length > 0
-              ? courses.map((entry) => {
-                  return (
-                    <li class="fx-card fx-glass flex h-full flex-col rounded-2xl border border-dark-slate-grey-800 bg-tea-green-800 p-3">
-                      <h4 class="text-charcoal-blue-300">{entry.data.title}</h4>
-                      <p>{entry.data.place}</p>
-                      <p>{educationDates(entry.data.start, entry.data.end, "course")}</p>
-                      {(entry.data.certificate || entry.data.url) && (
-                        <div class="mt-2 flex items-center gap-4">
-                          {entry.data.certificate && (
-                            <ExternalLink class="inline-flex items-center gap-1 text-pacific-cyan-500" href={entry.data.certificate}>
-                              <FileText size={16} aria-hidden="true" />
-                              {t("education.certificate")}
-                            </ExternalLink>
-                          )}
-                          {entry.data.url && (
-                            <ExternalLink class="text-pacific-cyan-500" href={entry.data.url} aria-label={t("education.course")}>
-                              <ExternalLinkIcon size={16} aria-hidden="true" />
-                            </ExternalLink>
-                          )}
-                        </div>
-                      )}
-                    </li>
-                  );
-                })
-              : coursePlaceholders.map(() => (
-                  <li class="fx-card fx-glass flex h-full flex-col rounded-2xl border border-dark-slate-grey-800 bg-tea-green-800 p-4">
-                    <h4 class:list={["text-lg", placeholder]}>{t("placeholder.course.title")}</h4>
-                    <p class={placeholder}>{t("placeholder.course.place")}</p>
-                    <p class={placeholder}>{t("placeholder.course.dates")}</p>
-                    <p class:list={["mt-2 inline-flex items-center gap-1", placeholder]}>
-                      <FileText size={16} aria-hidden="true" />
-                      {t("placeholder.course.certificate")}
-                    </p>
-                  </li>
-                ))
-          }
-        </ul>
-      </section>
-
-      <ContactSection locale={locale} />
+    <main class="mx-auto max-w-6xl px-5 pt-28 sm:px-8 md:pt-40">
+      <HeroSection locale={locale} />
+      <ProjectsSection locale={locale} index="01" />
+      <ExperienceSection locale={locale} index="02" />
+      <EducationSection locale={locale} index="03" />
+      <ContactSection locale={locale} index="04" />
     </main>
     <ScrollScene label={t("scroll.scene")} />
     <Footer locale={locale} />

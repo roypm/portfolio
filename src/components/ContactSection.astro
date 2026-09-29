@@ -1,24 +1,25 @@
 ---
+import { ArrowRight } from "@lucide/astro";
+import SectionHead from "./SectionHead.astro";
 import { turnstileSiteKey } from "../config";
 import type { Locale } from "../i18n/ui";
 import { useTranslations } from "../i18n/utils";
 
 interface Props {
   locale: Locale;
+  index: string;
 }
 
-const { locale } = Astro.props;
+const { locale, index } = Astro.props;
 const t = useTranslations(locale);
-const fieldClass =
-  "w-full rounded-lg border border-dark-slate-grey-800 bg-tea-green-900 px-3 py-1.5 text-sm text-charcoal-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pacific-cyan-500";
+const labelClass = "t-eyebrow";
 ---
 
-<section id="contact" class="mt-16 scroll-mt-24 fx-reveal" data-reveal>
-  <div class="fx-section-line mb-3" aria-hidden="true"></div>
-  <div class="grid items-start gap-8 md:grid-cols-2 md:gap-10">
+<section id="contact" class="mt-32 scroll-mt-28 md:mt-48">
+  <SectionHead index={index} title={t("contact.title")} />
+  <div class="mt-14 grid items-start gap-x-16 gap-y-12 md:grid-cols-2">
     <div class="fx-reveal" data-reveal style="--reveal-delay: 100ms">
-      <h2 class="text-3xl text-charcoal-blue-300">{t("contact.title")}</h2>
-      <p class="mt-4 text-lg">{t("contact.lead")}</p>
+      <p class="t-lead max-w-md text-pretty">{t("contact.lead")}</p>
     </div>
     <form
       data-contact-form
@@ -26,20 +27,22 @@ const fieldClass =
       data-sending={t("contact.sending")}
       data-success={t("contact.success")}
       data-error={t("contact.error")}
-      class="fx-glass relative flex flex-col gap-2 rounded-2xl border border-dark-slate-grey-800 p-5 md:p-6"
+      class="fx-reveal relative flex flex-col gap-7"
+      data-reveal
+      style="--reveal-delay: 180ms"
       novalidate
     >
-      <label class="flex flex-col gap-1 text-sm text-charcoal-blue-500">
-        {t("contact.name")}
-        <input class={`${fieldClass} transition-shadow duration-300`} type="text" name="name" autocomplete="name" required />
+      <label class="flex flex-col gap-2">
+        <span class={labelClass}>{t("contact.name")}</span>
+        <input class="field" type="text" name="name" autocomplete="name" required />
       </label>
-      <label class="flex flex-col gap-1 text-sm text-charcoal-blue-500">
-        {t("contact.email")}
-        <input class={`${fieldClass} transition-shadow duration-300`} type="email" name="email" autocomplete="email" required />
+      <label class="flex flex-col gap-2">
+        <span class={labelClass}>{t("contact.email")}</span>
+        <input class="field" type="email" name="email" autocomplete="email" required />
       </label>
-      <label class="flex flex-col gap-1 text-sm text-charcoal-blue-500">
-        {t("contact.message")}
-        <textarea class={`${fieldClass} min-h-20 resize-y transition-shadow duration-300`} name="message" rows="4" required></textarea>
+      <label class="flex flex-col gap-2">
+        <span class={labelClass}>{t("contact.message")}</span>
+        <textarea class="field min-h-24 resize-y" name="message" rows="4" required></textarea>
       </label>
       <div class="pointer-events-none absolute m-[-1px] h-px w-px overflow-hidden border-0 p-0" aria-hidden="true">
         <label>
@@ -52,12 +55,17 @@ const fieldClass =
           <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="auto"></div>
         )
       }
-      <p data-contact-status class="min-h-5 text-sm text-charcoal-blue-500" role="status" aria-live="polite"></p>
+      <p data-contact-status class="min-h-5 text-sm" role="status" aria-live="polite"></p>
       <button
         type="submit"
-        class="fx-button mt-1 inline-flex h-10 items-center justify-center self-start rounded-full bg-pacific-cyan-500 px-5 text-sm text-tea-green-900 shadow-md transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pacific-cyan-500 disabled:opacity-60"
+        class="fx-button group inline-flex h-12 items-center justify-center gap-2 self-start rounded-full px-7 text-sm tracking-wide transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-pacific-cyan-500 disabled:opacity-60"
       >
-        {t("contact.send")}
+        <span class="relative z-1" data-button-label>{t("contact.send")}</span>
+        <ArrowRight
+          class="relative z-1 transition-transform duration-300 group-hover:translate-x-1"
+          size={16}
+          aria-hidden="true"
+        />
       </button>
     </form>
   </div>
@@ -77,8 +85,9 @@ const fieldClass =
   form?.addEventListener("submit", async (event) => {
     event.preventDefault();
     const button = form.querySelector<HTMLButtonElement>("button[type=submit]");
+    const label = form.querySelector<HTMLElement>("[data-button-label]");
     const status = form.querySelector<HTMLElement>("[data-contact-status]");
-    if (!button || !status) return;
+    if (!button || !label || !status) return;
 
     const data = new FormData(form);
     const visible = visibleContact(data.get("name"), data.get("email"), data.get("message"));
@@ -88,7 +97,7 @@ const fieldClass =
     }
 
     button.disabled = true;
-    button.textContent = form.dataset.sending ?? "";
+    label.textContent = form.dataset.sending ?? "";
     status.textContent = "";
     form.setAttribute("aria-busy", "true");
 
@@ -116,7 +125,7 @@ const fieldClass =
       resetTurnstile();
     } finally {
       button.disabled = false;
-      button.textContent = form.dataset.send ?? "";
+      label.textContent = form.dataset.send ?? "";
       form.removeAttribute("aria-busy");
     }
   });
