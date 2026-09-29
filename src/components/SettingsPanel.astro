@@ -147,6 +147,13 @@ const palettes = [
 </div>
 
 <script>
+  const settingsPortal = document.querySelector<HTMLElement>("[data-settings]");
+  if (settingsPortal && settingsPortal.parentElement?.closest("[data-nav-cluster]")) {
+    document.body.appendChild(settingsPortal);
+  }
+</script>
+
+<script>
   const openButton = document.querySelector<HTMLButtonElement>("[data-settings-open]");
   const root = document.querySelector<HTMLElement>("[data-settings]");
   const panel = document.querySelector<HTMLElement>("[data-settings-panel]");
@@ -218,13 +225,9 @@ const palettes = [
   let navTravelMarker: HTMLElement | undefined;
   let navTravelAnimation: Animation | undefined;
   let navArrivalAnimation: Animation | undefined;
-  let navLiveAnimation: Animation | undefined;
 
   function applyPlacement(placement: "top" | "left" | "right", persist: boolean) {
     const previousPlacement = readPlacement(document.documentElement.dataset.navPlacement);
-    const lateralTransition =
-      (previousPlacement === "left" || previousPlacement === "right") &&
-      (placement === "left" || placement === "right");
     const shouldAnimate =
       persist &&
       navCluster &&
@@ -234,10 +237,9 @@ const palettes = [
 
     navTravelAnimation?.cancel();
     navArrivalAnimation?.cancel();
-    navLiveAnimation?.cancel();
     navTravelMarker?.remove();
     navTravelMarker = undefined;
-    if (oldRect && navCluster && !lateralTransition) {
+    if (oldRect && navCluster) {
       navCluster.style.visibility = "hidden";
       const marker = document.createElement("span");
       marker.className = "nav-travel-marker";
@@ -257,23 +259,7 @@ const palettes = [
     }
 
     const marker = navTravelMarker;
-    if (oldRect && navCluster && lateralTransition) {
-      requestAnimationFrame(() => {
-        const newRect = navCluster.getBoundingClientRect();
-        const offsetX = oldRect.left - newRect.left;
-        const offsetY = oldRect.top - newRect.top;
-        navLiveAnimation = navCluster.animate(
-          [
-            { transform: `translate(${offsetX}px, ${offsetY}px)` },
-            { transform: "translate(0, 0)" },
-          ],
-          {
-            duration: 620,
-            easing: "cubic-bezier(0.22, 1, 0.36, 1)",
-          },
-        );
-      });
-    } else if (oldRect && navCluster && marker) {
+    if (oldRect && navCluster && marker) {
       requestAnimationFrame(() => {
         const newRect = navCluster.getBoundingClientRect();
         navTravelAnimation = marker.animate(
