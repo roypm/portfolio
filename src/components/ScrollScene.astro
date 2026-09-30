@@ -120,7 +120,23 @@ const pieceStyle = (piece: { x: string; y: string; size: string; opacity?: strin
   import { createTimeline, onScroll } from "animejs";
 
   const scene = document.querySelector<HTMLElement>("[data-scroll-scene]");
-  if (scene && document.documentElement.classList.contains("fx-motion")) {
+  if (scene) {
+    let started = false;
+    let scroll: ReturnType<typeof onScroll> | undefined;
+
+    const start = () => {
+      if (started) {
+        scroll?.refresh();
+        return;
+      }
+      started = true;
+      scroll = onScroll({
+        target: scene,
+        enter: { target: "top", container: "bottom" },
+        leave: { target: "bottom", container: "top" },
+        sync: true,
+      });
+
     const blobs = [...scene.querySelectorAll<HTMLElement>("[data-scroll-blob]")];
     const rings = [...scene.querySelectorAll<HTMLElement>("[data-scroll-ring]")];
     const circles = [...scene.querySelectorAll<HTMLElement>("[data-scroll-circle]")];
@@ -143,12 +159,7 @@ const pieceStyle = (piece: { x: string; y: string; size: string; opacity?: strin
 
     const timeline = createTimeline({
       defaults: { ease: "linear" },
-      autoplay: onScroll({
-        target: scene,
-        enter: { target: "top", container: "bottom" },
-        leave: { target: "bottom", container: "top" },
-        sync: true,
-      }),
+      autoplay: scroll,
     });
 
     blobs.forEach((blob, index) => {
@@ -265,6 +276,13 @@ const pieceStyle = (piece: { x: string; y: string; size: string; opacity?: strin
         },
         start + 80,
       );
+    });
+    };
+
+    if (document.documentElement.classList.contains("fx-motion")) start();
+    document.documentElement.addEventListener("motionchange", () => {
+      if (!document.documentElement.classList.contains("fx-motion")) return;
+      requestAnimationFrame(() => start());
     });
   }
 </script>

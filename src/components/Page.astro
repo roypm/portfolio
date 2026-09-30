@@ -55,7 +55,6 @@ const description = home?.data.sentence ?? "";
         try {
           var storedPalette = localStorage.getItem("palette");
           if (
-            storedPalette === "garden" ||
             storedPalette === "blossom" ||
             storedPalette === "garnet" ||
             storedPalette === "slate" ||
@@ -65,6 +64,13 @@ const description = home?.data.sentence ?? "";
           }
         } catch (e) {}
         document.documentElement.setAttribute("data-palette", palette);
+        var motion = "on";
+        try {
+          var storedMotion = localStorage.getItem("motion");
+          if (storedMotion === "off") motion = "off";
+        } catch (e) {}
+        document.documentElement.setAttribute("data-motion", motion);
+        if (motion === "on") document.documentElement.classList.add("fx-motion");
       })();
     </script>
     <script is:inline>
@@ -114,28 +120,34 @@ const description = home?.data.sentence ?? "";
     <script is:inline>
       (function () {
         var root = document.documentElement;
-        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-        root.classList.add("fx-motion");
-        var items = document.querySelectorAll("[data-reveal]");
-        if (!("IntersectionObserver" in window)) {
-          items.forEach(function (item) {
-            item.setAttribute("data-reveal", "in");
-          });
-          return;
-        }
-        var observer = new IntersectionObserver(
-          function (entries) {
-            entries.forEach(function (entry) {
-              if (!entry.isIntersecting) return;
-              entry.target.setAttribute("data-reveal", "in");
-              observer.unobserve(entry.target);
+        var observer = null;
+        function watch() {
+          if (!root.classList.contains("fx-motion")) return;
+          var items = document.querySelectorAll("[data-reveal]:not([data-reveal='in'])");
+          if (!("IntersectionObserver" in window)) {
+            items.forEach(function (item) {
+              item.setAttribute("data-reveal", "in");
             });
-          },
-          { rootMargin: "0px 0px -8% 0px", threshold: 0.08 },
-        );
-        items.forEach(function (item) {
-          observer.observe(item);
-        });
+            return;
+          }
+          if (!observer) {
+            observer = new IntersectionObserver(
+              function (entries) {
+                entries.forEach(function (entry) {
+                  if (!entry.isIntersecting) return;
+                  entry.target.setAttribute("data-reveal", "in");
+                  observer.unobserve(entry.target);
+                });
+              },
+              { rootMargin: "0px 0px -8% 0px", threshold: 0.08 },
+            );
+          }
+          items.forEach(function (item) {
+            observer.observe(item);
+          });
+        }
+        watch();
+        root.addEventListener("motionchange", watch);
       })();
     </script>
   </body>
