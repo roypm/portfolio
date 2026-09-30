@@ -78,7 +78,28 @@ const sections = [
   }
 
   highlightSectionAtTop();
-  document.addEventListener("scroll", highlightSectionAtTop, { passive: true });
+
+  if ("IntersectionObserver" in window && sections.length > 0) {
+    const margin = Number.parseFloat(getComputedStyle(sections[0]!).scrollMarginTop) || 0;
+    const intersecting = new Set<Element>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) intersecting.add(entry.target);
+          else intersecting.delete(entry.target);
+        }
+        const current = [...intersecting].sort(
+          (a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top,
+        )[0];
+        if (current instanceof HTMLElement) highlight(current.id);
+        else highlightSectionAtTop();
+      },
+      { rootMargin: `-${margin + 8}px 0px -65% 0px`, threshold: 0 },
+    );
+    sections.forEach((section) => observer.observe(section));
+  } else {
+    document.addEventListener("scroll", highlightSectionAtTop, { passive: true });
+  }
 
   for (const link of document.querySelectorAll<HTMLAnchorElement>("[data-locale-switch]")) {
     link.addEventListener("click", () => {

@@ -1,5 +1,5 @@
 ---
-import { Font } from "astro:assets";
+import { Font, getImage } from "astro:assets";
 import { getCollection } from "astro:content";
 import ContactBubble from "./ContactBubble.astro";
 import ContactSection from "./ContactSection.astro";
@@ -26,6 +26,16 @@ const home = homes.find((entry) => entry.id === locale) ?? homes.find((entry) =>
 const name = home?.data.name ?? "";
 const role = home?.data.role ?? "";
 const description = home?.data.sentence ?? "";
+const siteUrl = Astro.site ?? new URL("https://www.roypm.es");
+const pageUrl = new URL(Astro.url.pathname, siteUrl);
+const socialImage = home?.data.photo
+  ? await getImage({ src: home.data.photo, width: 1200, height: 630, fit: "cover", format: "jpg" })
+  : undefined;
+const localeUrls = {
+  es: new URL("/", siteUrl),
+  en: new URL("/en/", siteUrl),
+  ca: new URL("/ca/", siteUrl),
+};
 ---
 
 <html lang={locale} class="bg-tea-green-900">
@@ -36,6 +46,19 @@ const description = home?.data.sentence ?? "";
     <meta name="generator" content={Astro.generator} />
     <title>{name ? `${name} — ${role}` : "Portfolio"}</title>
     {description && <meta name="description" content={description} />}
+    <link rel="canonical" href={pageUrl} />
+    {Object.entries(localeUrls).map(([code, url]) => <link rel="alternate" hreflang={code} href={url} />)}
+    <link rel="alternate" hreflang="x-default" href={localeUrls.es} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={locale === "ca" ? "ca_ES" : locale === "en" ? "en_US" : "es_ES"} />
+    <meta property="og:title" content={name ? `${name} — ${role}` : "Portfolio"} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:url" content={pageUrl} />
+    {socialImage && <meta property="og:image" content={new URL(socialImage.src, siteUrl)} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={name ? `${name} — ${role}` : "Portfolio"} />
+    {description && <meta name="twitter:description" content={description} />}
+    {socialImage && <meta name="twitter:image" content={new URL(socialImage.src, siteUrl)} />}
     <Font cssVariable="--font-geist" preload />
     <Font cssVariable="--font-geist-mono" />
     <style is:inline>
@@ -86,7 +109,7 @@ const description = home?.data.sentence ?? "";
     <div class="fx-glow-field" aria-hidden="true"></div>
     <Nav locale={locale} />
     <main class="mx-auto max-w-6xl px-5 pt-28 sm:px-8 md:pt-40">
-      <HeroSection locale={locale} />
+      <HeroSection locale={locale} home={home} />
       <ProjectsSection locale={locale} index="01" />
       <ExperienceSection locale={locale} index="02" />
       <EducationSection locale={locale} index="03" />
