@@ -1,8 +1,12 @@
 ---
 import { Image } from "astro:assets";
 import { render, type CollectionEntry } from "astro:content";
+import { authorUrl, linkedinUrl } from "../config";
 import type { Locale } from "../i18n/ui";
 import { useTranslations } from "../i18n/utils";
+import ExternalLink from "./ExternalLink.astro";
+import GithubIcon from "./GithubIcon.astro";
+import LinkedinIcon from "./LinkedinIcon.astro";
 
 interface Props {
   locale: Locale;
@@ -44,6 +48,23 @@ const placeholder = "italic text-dark-slate-grey-600";
     <p class:list={["t-lead mt-8 max-w-lg", !sentence && placeholder]}>
       {sentence || t("placeholder.sentence")}
     </p>
+
+    <nav class="mt-8" aria-label={t("intro.profiles")}>
+      <ul class="flex flex-wrap items-center gap-x-6 gap-y-2">
+        <li>
+          <ExternalLink class="profile-link fx-link-underline" href={authorUrl}>
+            <GithubIcon size={15} />
+            {t("repo")}
+          </ExternalLink>
+        </li>
+        <li>
+          <ExternalLink class="profile-link fx-link-underline" href={linkedinUrl}>
+            <LinkedinIcon size={15} />
+            {t("linkedin")}
+          </ExternalLink>
+        </li>
+      </ul>
+    </nav>
   </section>
 
   <div class="flex flex-col gap-12 md:pt-28">

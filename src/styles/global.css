@@ -542,6 +542,25 @@ html.fx-motion {
   color: var(--ink-muted);
 }
 
+.profile-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-geist-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--accent);
+  border-radius: 0.25rem;
+}
+
+.profile-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
 .t-mono {
   font-family: var(--font-geist-mono);
   font-size: 0.75rem;

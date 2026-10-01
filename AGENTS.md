@@ -45,7 +45,7 @@ One page per locale. The nav jumps to Intro, Projects, Experience, and Education
 
 Order:
 
-1. Intro: name, role, one sentence, and an optional photo
+1. Intro: name, role, one sentence, GitHub and LinkedIn, and an optional photo
 2. Bio: a few paragraphs
 3. Current focus: the kind of work wanted now
 4. Projects: one MDX entry per project (screenshot, stack, link)
@@ -57,7 +57,7 @@ A project gets its own URL only when it needs a long writeup.
 
 # Format
 
-- Intro, bio, and focus are one block. On a wide screen, photo, name, role, and sentence sit in one column, and bio plus focus sit in the other. On a narrow screen those columns stack.
+- Intro, bio, and focus are one block. On a wide screen, photo, name, role, sentence, and the GitHub and LinkedIn links sit in one column, and bio plus focus sit in the other. On a narrow screen those columns stack. The profile links sit under the sentence, each with its icon and name, at the same size as the role.
 - Projects, experience, education, and contact each open with a full-width accent line, and the heading sits just under it. Bio and focus have no line.
 - Contact is two columns on a wide screen and one column on a narrow screen. The call and the short line sit in the first column. The compact form sits in the second.
 - The contact call to action is a fixed bubble at the bottom-right. On a wide screen it is an elongated pill with the label. On a narrow screen it is a circle with the icon only. The bubble jumps to the contact section.
